@@ -1,14 +1,10 @@
-// APPHO @ SDSU — single file React site (Membership includes Admin access)
-// Edit only the `site` object below to update copy, colors, images, officers, speakers, and links.
-// Yearly refresh: change `site.year`, update officers and speakers.
-// Google Calendar: paste your embed into site.events.calendarSrc.
-// Admin in Membership: set site.admin.password and site.admin.sheetLink.
-// Deploy: I can package for Vite/Netlify/Vercel, or export as static HTML.
+// APPHO @ SDSU — single file React site
+// Edit only the `site` object below to update copy, colors, images, officers, speakers, links, and passwords.
 
 import { useMemo, useState } from "react";
 import { Calendar, Users, Mail, Instagram, Globe, Shield } from "lucide-react";
 
-// Inject Google Fonts + brand tokens
+// Inject Google Fonts + brand tokens + site-wide styles
 function HeadStyle() {
   return (
     <>
@@ -25,6 +21,7 @@ function HeadStyle() {
     --appho-charcoal:#2D2828;   /* Charcoal */
     --appho-black:#000000;      /* Black */
   }
+
   .font-display{font-family:'Oswald',system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol',sans-serif;}
   .font-sans{font-family:'Inter',ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif;}
 
@@ -36,8 +33,12 @@ function HeadStyle() {
   .border-appho-charcoal{border-color:var(--appho-charcoal);}
 
   /* global link accent */
-   a { transition: color .2s ease; }
-   a:hover { color: var(--appho-bright-red); }
+  a { transition: color .2s ease, background-color .2s ease, box-shadow .2s ease, border-color .2s ease; }
+  a:hover { color: var(--appho-bright-red); }
+
+  /* button-like links (no underline) */
+  a.btn { text-decoration: none !important; }
+  a.btn:hover { text-decoration: none !important; }
 
   /* section title accent (thin red bar on the left) */
   .section-title{
@@ -48,7 +49,7 @@ function HeadStyle() {
     background: linear-gradient(180deg, var(--appho-dark-red), var(--appho-bright-red));
   }
 
-  /* card hover outline (used on Exec Board + Events) */
+  /* card hover outline (used on Exec Board + Events + generic cards) */
   .card-hover-red{
     transition: box-shadow .2s ease, border-color .2s ease, transform .2s ease;
   }
@@ -58,7 +59,7 @@ function HeadStyle() {
     transform: translateY(-1px);
   }
 
-  /* simple accordion styling */
+  /* simple accordion styling (FAQ) */
   details.faq{
     border:1px solid #e5e7eb; border-radius:12px; background:#fff; padding:12px 16px;
   }
@@ -76,19 +77,18 @@ function HeadStyle() {
   );
 }
 
-// ==========================
-// CONTENT — EDIT ME ONLY
-// ==========================
+/* ==========================
+   CONTENT — EDIT ME ONLY
+========================== */
 const site = {
   name: "APPHO @ SDSU",
   year: "2025–26",
   tagline: "Building Passionate Healthcare Providers",
   brand: {
     logoUrl: "/img/appho-logo.png", // replace with your logo URL or leave blank to hide
-    primaryColor: "bg-appho-red", // SDSU red
-    headerColor: "bg-appho-black", // SDSU black
+    primaryColor: "bg-appho-red",   // SDSU red
+    headerColor: "bg-appho-black",  // SDSU black
   },
-  // Navigation — Membership includes Admin. No APPHO4LIFE.
   nav: [
     { key: "membership", label: "Membership" },
     { key: "speakers", label: "Speakers" },
@@ -145,16 +145,19 @@ const site = {
       { name: "avi", role: "Treasurer", photo: "" },
       { name: "avi", role: "Outreach Lead", photo: "", email: "leo@apphosdsu.com" },
     ],
-    advisors: [
-      // { name: "Faculty Advisor", role: "Advisor", photo: "", email: "" },
-    ],
+    advisors: [],
   },
   events: {
-    intro: "Public calendar. Auto updates.",
-    calendarSrc:
-      "https://calendar.google.com/calendar/embed?src=c_classroom12345%40group.calendar.google.com&ctz=America%2FLos_Angeles",
+    intro: "Members-only calendar.",
+    // If you have a public embed, you can still set it here:
+    calendarSrc: "https://calendar.google.com/calendar/embed?src=c_classroom12345%40group.calendar.google.com&ctz=America%2FLos_Angeles",
     addCalendarText: "Add to your calendar",
     addCalendarLink: "",
+
+    // Gate settings
+    protected: true,
+    password: "APPHO25", // change this
+    gateNote: "Members only. Ask an officer for the password.",
   },
   contact: {
     email: "appho.sdsu@gmail.com",
@@ -164,19 +167,19 @@ const site = {
   },
   admin: {
     password: "appho-admin", // change this
-    sheetLink: "", // paste your Google Sheet link here
+    sheetLink: "",           // paste your Google Sheet link here
   },
-  // NEW: Simple member calendar password + link (client-side only)
+  // Members calendar link (non-embed) — used to auto-generate an embed when possible
   members: {
-    calendarPassword: "appho2024", // change this anytime
+    calendarPassword: "appho2024", // not used by Events gate; kept in case you want a separate gated link widget
     calendarLink:
       "https://calendar.google.com/calendar/u/0?cid=ODNkNWUzMzZkMjI2NWMzNjAwMzFhOWMzNWU5YmY2NjU4Njk2NmY4MzBmZWE2MTY1MzhlYjc3MDUzZGU5ODE4N0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t",
   },
 };
 
-// ==========================
-// UI
-// ==========================
+/* ==========================
+   UI
+========================== */
 function Container({ children }) {
   return <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 font-sans">{children}</div>;
 }
@@ -189,9 +192,7 @@ function Logo() {
           src={site.brand.logoUrl}
           alt="APPHO logo"
           className="h-9 w-auto object-contain hidden sm:block"
-          onError={(e) => {
-            e.currentTarget.style.display = "none";
-          }}
+          onError={(e) => { e.currentTarget.style.display = "none"; }}
         />
       ) : null}
       <div className="text-xl font-display tracking-tight">APPHO</div>
@@ -223,7 +224,7 @@ function Nav({ current, setCurrent }) {
           </nav>
           <a
             href={site.hero.ctaLink}
-            className={`hidden rounded-xl px-3 py-2 text-sm font-medium md:inline-block ${site.brand.primaryColor} text-white hover:opacity-90`}
+            className={`hidden rounded-xl px-3 py-2 text-sm font-medium md:inline-block ${site.brand.primaryColor} text-white hover:opacity-90 btn`}
           >
             {site.hero.ctaText}
           </a>
@@ -266,11 +267,11 @@ function Hero() {
             <div className="mt-6 flex items-center gap-3">
               <a
                 href={site.hero.ctaLink}
-                className={`rounded-xl px-4 py-2 ${site.brand.primaryColor} text-white font-medium hover:opacity-90`}
+                className={`rounded-xl px-4 py-2 ${site.brand.primaryColor} text-white font-medium hover:opacity-90 btn`}
               >
                 {site.hero.ctaText}
               </a>
-              <a href="#events" className="rounded-xl px-4 py-2 bg-white/10 hover:bg-white/20">
+              <a href="#events" className="rounded-xl px-4 py-2 bg-white/10 hover:bg-white/20 btn">
                 See events
               </a>
             </div>
@@ -289,7 +290,7 @@ function Hero() {
 
 function Card({ children, className = "" }) {
   return (
-    <div className={`rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm ${className}`}>
+    <div className={`rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm card-hover-red ${className}`}>
       {children}
     </div>
   );
@@ -300,7 +301,7 @@ function HomeAbout() {
     <section className="py-12">
       <Container>
         <div className="grid gap-6 md:grid-cols-2">
-          <Card className="card-hover-red">
+          <Card>
             <h2 className="font-display text-3xl section-title">About</h2>
             <p className="mt-3 text-zinc-700">{site.about.blurb}</p>
             <ul className="mt-4 space-y-2 text-zinc-700 list-disc pl-5">
@@ -309,13 +310,13 @@ function HomeAbout() {
               ))}
             </ul>
           </Card>
-          <Card className="card-hover-red">
+          <Card>
             <h3 className="text-xl font-medium">Get started</h3>
             <div className="mt-3 grid gap-3">
-              <a href={site.hero.ctaLink} className="rounded-xl border px-4 py-3 hover:bg-zinc-50 link-red">
+              <a href={site.hero.ctaLink} className="rounded-xl border px-4 py-3 hover:bg-zinc-50 btn">
                 Membership form
               </a>
-              <a href="#events" className="rounded-xl border px-4 py-3 hover:bg-zinc-50 link-red">
+              <a href="#events" className="rounded-xl border px-4 py-3 hover:bg-zinc-50 btn">
                 See upcoming events
               </a>
             </div>
@@ -329,8 +330,7 @@ function HomeAbout() {
 /* ===== FAQ (accordion) ===== */
 function FAQ() {
   const faqs = [
-    {
-      q: "What is APPHO and what does it stand for?",
+    { q: "What is APPHO and what does it stand for?",
       a: "APPHO stands for the Aztec Pre-Professional Health Organization. We are a student-run organization at SDSU dedicated to supporting students pursuing careers in the health professions, including medicine, dentistry, pharmacy, optometry, physician assistant, and more."
     },
     { q: "Who can join APPHO?",
@@ -384,9 +384,7 @@ function FAQ() {
 
 /* ===== Photos (placeholder grid) ===== */
 function Photos() {
-  const images = [
-    // Add real URLs later: "/img/gallery/1.jpg", "/img/gallery/2.jpg", ...
-  ];
+  const images = []; // add URLs later
   if (!images.length) {
     return (
       <section className="py-12">
@@ -415,48 +413,12 @@ function Photos() {
   );
 }
 
-/* ===== Password-gated Members Calendar button ===== */
-function MembersCalendar() {
-  const [pwd, setPwd] = useState("");
-  const ok = pwd === site.members.calendarPassword;
-
-  return (
-    <div className="mt-6 rounded-2xl border p-5 bg-white card-hover-red">
-      <h3 className="font-display text-2xl section-title">Members Calendar</h3>
-      {!ok ? (
-        <>
-          <p className="mt-2 text-sm text-zinc-600">Enter the members password to access the calendar link.</p>
-          <input
-            type="password"
-            value={pwd}
-            onChange={(e) => setPwd(e.target.value)}
-            placeholder="Password"
-            className="mt-3 w-full rounded-lg border px-3 py-2"
-          />
-        </>
-      ) : (
-        <div className="mt-3">
-          <a
-            className="rounded-xl px-4 py-2 bg-appho-dark text-white inline-block hover:opacity-90"
-            href={site.members.calendarLink}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Open Members Calendar
-          </a>
-          <p className="mt-2 text-xs text-zinc-500">Please don’t share this link publicly.</p>
-        </div>
-      )}
-    </div>
-  );
-}
-
 function Membership() {
   return (
     <section className="py-12">
       <Container>
         <div className="grid gap-6 md:grid-cols-2">
-          <Card className="card-hover-red">
+          <Card>
             <h2 className="font-display text-3xl section-title">Membership</h2>
             <p className="mt-2 text-zinc-600">{site.membership.intro}</p>
             <ul className="mt-4 space-y-2 text-zinc-700 list-disc pl-5">
@@ -473,14 +435,14 @@ function Membership() {
               </p>
             )}
           </Card>
-          <Card className="card-hover-red">
+          <Card>
             <h3 className="text-xl font-medium">Join the club</h3>
             <div className="mt-3 grid gap-3">
               {site.membership.howToJoin.map((x, i) => (
                 <a
                   key={i}
                   href={x.href}
-                  className="flex items-center justify-between rounded-xl border px-4 py-3 hover:bg-zinc-50 link-red"
+                  className="flex items-center justify-between rounded-xl border px-4 py-3 hover:bg-zinc-50 btn"
                 >
                   <span>{x.label}</span>
                 </a>
@@ -500,7 +462,7 @@ function AdminInline() {
   const [pwd, setPwd] = useState("");
   const ok = pwd === site.admin.password;
   return (
-    <Card className="card-hover-red">
+    <Card>
       <div className="flex items-center gap-2">
         <Shield className="h-5 w-5" />
         <h3 className="font-display text-2xl">Officer / Admin</h3>
@@ -519,7 +481,7 @@ function AdminInline() {
       ) : (
         <div className="mt-4">
           {site.admin.sheetLink ? (
-            <a className="underline link-red" href={site.admin.sheetLink} target="_blank" rel="noreferrer">
+            <a className="" href={site.admin.sheetLink} target="_blank" rel="noreferrer">
               Open admin spreadsheet
             </a>
           ) : (
@@ -574,7 +536,7 @@ function SpeakerCard({ name, role, topic, date, link, tag }) {
       <div className="mt-3 flex items-center justify-between text-sm text-zinc-600">
         <span>{date}</span>
         {link && (
-          <a className="font-semibold link-red" href={link} target="_blank" rel="noreferrer">
+          <a className="" href={link} target="_blank" rel="noreferrer">
             Details
           </a>
         )}
@@ -589,14 +551,19 @@ function People() {
       <Container>
         <h2 className="font-display text-3xl section-title">Exec. Board</h2>
         <p className="mt-2 text-zinc-600">{site.people.intro}</p>
-        <p className="text-xs text-zinc-500">{site.people.note}</p>
         <h3 className="mt-6 font-semibold flex items-center gap-2"><Users className="h-4 w-4" /> Executive Board</h3>
         <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {site.people.officers.map((p, i) => (
-            <Card key={i} className="card-hover-red">
+            <Card key={i}>
               <div
                 className="aspect-[4/5] w-full rounded-xl bg-cover bg-center"
-                style={{ backgroundImage: `url(${p.photo})` }}
+                style={{
+                  backgroundImage: p.photo ? `url(${p.photo})` : undefined,
+                  background:
+                    p.photo
+                      ? undefined
+                      : "linear-gradient(180deg, rgba(166,25,46,.35), rgba(212,23,54,.35))",
+                }}
               />
               <div className="mt-3">
                 <div className="font-semibold">{p.name}</div>
@@ -604,7 +571,7 @@ function People() {
                 {p.email && (
                   <a
                     href={`mailto:${p.email}`}
-                    className="mt-2 inline-flex items-center gap-2 rounded-lg border px-3 py-1 text-sm hover:bg-zinc-50 link-red"
+                    className="mt-2 inline-flex items-center gap-2 rounded-lg border px-3 py-1 text-sm hover:bg-zinc-50 btn"
                   >
                     <Mail className="h-4 w-4" /> Email
                   </a>
@@ -613,46 +580,64 @@ function People() {
             </Card>
           ))}
         </div>
-        {site.people.advisors?.length ? (
-          <>
-            <h3 className="mt-10 font-semibold">Advisors</h3>
-            <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {site.people.advisors.map((p, i) => (
-                <Card key={i} className="card-hover-red">
-                  <div
-                    className="aspect-[4/5] w-full rounded-xl bg-cover bg-center"
-                    style={{ backgroundImage: `url(${p.photo})` }}
-                  />
-                  <div className="mt-3">
-                    <div className="font-semibold">{p.name}</div>
-                    <div className="text-sm text-zinc-600">{p.role}</div>
-                    {p.email && (
-                      <a href={`mailto:${p.email}`} className="mt-2 inline-block underline text-sm link-red">
-                        {p.email}
-                      </a>
-                    )}
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </>
-        ) : null}
       </Container>
     </section>
   );
 }
 
 function Events() {
+  const [pwd, setPwd] = useState("");
+  const ok = !site.events.protected || pwd === site.events.password;
+
+  // Try to auto-build an EMBED src from the members.calendarLink cid=
+  const embedSrc = useMemo(() => {
+    try {
+      const raw = site.members?.calendarLink || "";
+      const u = new URL(raw);
+      const cid = u.searchParams.get("cid");
+      if (cid) {
+        const tz = "America/Los_Angeles";
+        return `https://calendar.google.com/calendar/embed?src=${encodeURIComponent(cid)}&ctz=${encodeURIComponent(tz)}`;
+      }
+    } catch (e) {}
+    return site.events.calendarSrc;
+  }, []);
+
   return (
     <section id="events" className="py-12">
       <Container>
-        <h2 className="font-display text-3xl section-title">Events</h2>
+        <h2 className="section-title font-display text-3xl">Events</h2>
         <p className="mt-2 text-zinc-600">{site.events.intro}</p>
-        <div className="mt-4 overflow-hidden rounded-2xl border card-hover-red">
-          <iframe title="Google Calendar" src={site.events.calendarSrc} style={{ border: 0 }} className="h-[720px] w-full" />
-        </div>
-        {/* Password-gated members calendar button */}
-        <MembersCalendar />
+
+        {!ok ? (
+          <div className="mt-6 max-w-xl">
+            <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm card-hover-red">
+              <p className="text-sm text-zinc-600">{site.events.gateNote}</p>
+              <label className="mt-4 block text-sm font-medium text-zinc-800">Enter password</label>
+              <input
+                type="password"
+                value={pwd}
+                onChange={(e) => setPwd(e.target.value)}
+                placeholder="••••••••"
+                className="mt-2 w-full rounded-lg border border-zinc-300 px-3 py-2"
+              />
+              <button className="mt-4 rounded-xl bg-appho-red px-4 py-2 text-white btn">Unlock</button>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-6 overflow-hidden rounded-2xl border card-hover-red">
+            <iframe title="Google Calendar" src={embedSrc} style={{ border: 0 }} className="h-[720px] w-full" />
+          </div>
+        )}
+
+        {ok && site.events.addCalendarLink && (
+          <a
+            href={site.events.addCalendarLink}
+            className="mt-4 inline-flex items-center gap-2 rounded-xl border px-4 py-2 hover:bg-zinc-50 btn"
+          >
+            <Calendar className="h-4 w-4" /> {site.events.addCalendarText}
+          </a>
+        )}
       </Container>
     </section>
   );
@@ -663,33 +648,31 @@ function Contact() {
     <section className="py-12">
       <Container>
         <div className="grid gap-6 md:grid-cols-2">
-          <Card className="card-hover-red">
+          <Card>
             <h2 className="font-display text-3xl section-title">Contact</h2>
             <div className="mt-3 space-y-3 text-sm text-zinc-700">
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4" />
-                <a className="underline link-red" href={`mailto:${site.contact.email}`}>
+                <a href={`mailto:${site.contact.email}`}>
                   {site.contact.email}
                 </a>
               </div>
               <div className="flex items-center gap-2">
                 <Instagram className="h-4 w-4" />
-                <a className="underline link-red" href={site.contact.instagram}>
-                  Instagram
-                </a>
+                <a href={site.contact.instagram}>Instagram</a>
               </div>
               <div className="flex items-center gap-2">
                 <Globe className="h-4 w-4" /> {site.contact.address}
               </div>
             </div>
-            <a href={site.contact.formTo} className="mt-4 inline-block rounded-xl border px-4 py-2 hover:bg-zinc-50 link-red">
+            <a href={site.contact.formTo} className="mt-4 inline-block rounded-xl border px-4 py-2 hover:bg-zinc-50 btn">
               Email us
             </a>
           </Card>
-          <Card className="card-hover-red">
+          <Card>
             <h3 className="text-xl font-medium">Questions about membership?</h3>
             <p className="mt-2 text-zinc-600">We will get back to you within a few days during the semester.</p>
-            <a href={site.hero.ctaLink} className="mt-4 inline-block rounded-xl border px-4 py-2 hover:bg-zinc-50 link-red">
+            <a href={site.hero.ctaLink} className="mt-4 inline-block rounded-xl border px-4 py-2 hover:bg-zinc-50 btn">
               Join form
             </a>
           </Card>
@@ -712,15 +695,11 @@ function Footer() {
           <div className="text-sm text-zinc-300">
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4" />
-              <a href={`mailto:${site.contact.email}`} className="underline link-red">
-                {site.contact.email}
-              </a>
+              <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
             </div>
             <div className="mt-2 flex items-center gap-2">
               <Instagram className="h-4 w-4" />
-              <a href={site.contact.instagram} className="underline link-red">
-                Instagram
-              </a>
+              <a href={site.contact.instagram}>Instagram</a>
             </div>
             <div className="mt-2 flex items-center gap-2">
               <Globe className="h-4 w-4" /> {site.contact.address}
@@ -763,10 +742,10 @@ export default function ApphoSite() {
   }, [current]);
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900">
+    <div className="min-h-screen bg-zinc-50 text-zinc-900 flex flex-col">
       <HeadStyle />
       <Nav current={current} setCurrent={setCurrent} />
-      {Page}
+      <main className="flex-1">{Page}</main>
       <Footer />
     </div>
   );
