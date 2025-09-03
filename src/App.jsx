@@ -139,7 +139,6 @@ const site = {
   },
   people: {
     intro: "Meet the leadership team",
-    note: "Update this every August.",
     officers: [
       { name: "Avery Lee", role: "President", photo: "https://images.unsplash.com/photo-1541534401786-2077eed87a54?q=80&w=800&auto=format&fit=crop", email: "avery@apphosdsu.com" },
       { name: "Sam Patel", role: "VP, Programs", photo: "https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=800&auto=format&fit=crop", email: "sam@apphosdsu.com" },
