@@ -29,11 +29,48 @@ function HeadStyle() {
   .font-sans{font-family:'Inter',ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif;}
 
   /* brand utility classes */
-  .bg-appho-red{background-color:var(--appho-bright-red);} 
-  .bg-appho-dark{background-color:var(--appho-dark-red);} 
-  .bg-appho-black{background-color:var(--appho-black);} 
-  .text-appho-red{color:var(--appho-bright-red);} 
-  .border-appho-charcoal{border-color:var(--appho-charcoal);} 
+  .bg-appho-red{background-color:var(--appho-bright-red);}
+  .bg-appho-dark{background-color:var(--appho-dark-red);}
+  .bg-appho-black{background-color:var(--appho-black);}
+  .text-appho-red{color:var(--appho-bright-red);}
+  .border-appho-charcoal{border-color:var(--appho-charcoal);}
+
+  /* global link accent */
+   a { transition: color .2s ease; }
+   a:hover { color: var(--appho-bright-red); }
+
+  /* section title accent (thin red bar on the left) */
+  .section-title{
+    position: relative; padding-left: 14px;
+  }
+  .section-title::before{
+    content:""; position:absolute; left:0; top:4px; bottom:4px; width:4px; border-radius:4px;
+    background: linear-gradient(180deg, var(--appho-dark-red), var(--appho-bright-red));
+  }
+
+  /* card hover outline (used on Exec Board + Events) */
+  .card-hover-red{
+    transition: box-shadow .2s ease, border-color .2s ease, transform .2s ease;
+  }
+  .card-hover-red:hover{
+    border-color: var(--appho-dark-red) !important;
+    box-shadow: 0 6px 22px rgba(166,25,46,.18);
+    transform: translateY(-1px);
+  }
+
+  /* simple accordion styling */
+  details.faq{
+    border:1px solid #e5e7eb; border-radius:12px; background:#fff; padding:12px 16px;
+  }
+  details.faq + details.faq{ margin-top:10px; }
+  details.faq[open]{ border-color: var(--appho-dark-red); box-shadow: 0 4px 16px rgba(166,25,46,.08); }
+  details.faq summary{
+    cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center;
+    font-weight:600;
+  }
+  details.faq summary::-webkit-details-marker{ display:none; }
+  .faq-caret{ transition: transform .2s ease; }
+  details[open] .faq-caret{ transform: rotate(90deg); }
 `}</style>
     </>
   );
@@ -68,35 +105,35 @@ const site = {
   },
   about: {
     blurb:
-      "APPHO is a mentorship and philanthropic organization that works with students who plan on pursuing a career in the pre‑health field. We support paths into medicine, dentistry, pharmacy, optometry, physical therapy, physician associate, and more.",
+      "APPHO is a mentorship and philanthropic organization that works with students who plan on pursuing a career in the pre-health field. We support paths into medicine, dentistry, pharmacy, optometry, physical therapy, physician associate, and more.",
     highlights: [
       "Clinical volunteering and community outreach",
       "Application prep: personal statements, interviews, CASPA/AMCAS/AADSAS",
-      "Shadowing and a pre‑health speaker series with practicing providers",
+      "Shadowing and a pre-health speaker series with practicing providers",
     ],
   },
   membership: {
     intro: "Membership is open to all SDSU students. No experience required.",
     benefits: [
-      "Weekly meetings with pre‑health workshops",
+      "Weekly meetings with pre-health workshops",
       "Clinical, shadowing, and volunteering opportunities",
-      "Application and test prep resources (MCAT/DAT/OAT/PA‑CAT)",
+      "Application and test prep resources (MCAT/DAT/OAT/PA-CAT)",
       "Mentorship and networking with providers and alumni",
     ],
     howToJoin: [
       { label: "Apply on Google Form", href: "https://forms.gle/example-membership" },
-      { label: "Join our GroupMe", href: "https://groupme.com/join_group/YOUR-GROUPME-CODE" },
+      { label: "Join our GroupMe", href: "https://groupme.com/join_group/88026538/Srd3FVX5" },
       { label: "Get the newsletter", href: "https://apphosdsu.com/newsletter" },
     ],
     dues: { show: true, text: "Annual dues: $20. Scholarships available. Pay after your 2nd meeting." },
   },
   speakers: {
-    intro: "Pre‑Health speaker series — physicians, dentists, PAs, pharmacists, PT/OT, optometrists, and more.",
+    intro: "Pre-Health speaker series — physicians, dentists, PAs, pharmacists, PT/OT, optometrists, and more.",
     upcoming: [
       // { name: "Dr. Jordan Kim", role: "Emergency Medicine, Scripps", topic: "Paths to MD/DO", date: "Oct 2, 2025", link: "#" },
     ],
     past: [
-      { name: "Alex Rivera, PA‑C", role: "Emergency Medicine", topic: "Becoming a Physician Associate", date: "Apr 3, 2025", link: "#" },
+      { name: "Alex Rivera, PA-C", role: "Emergency Medicine", topic: "Becoming a Physician Associate", date: "Apr 3, 2025", link: "#" },
       { name: "Priya Shah, PharmD", role: "Clinical Pharmacist", topic: "Hospital Pharmacy 101", date: "Mar 6, 2025", link: "#" },
     ],
   },
@@ -129,6 +166,12 @@ const site = {
   admin: {
     password: "appho-admin", // change this
     sheetLink: "", // paste your Google Sheet link here
+  },
+  // NEW: Simple member calendar password + link (client-side only)
+  members: {
+    calendarPassword: "appho2024", // change this anytime
+    calendarLink:
+      "https://calendar.google.com/calendar/u/0?cid=ODNkNWUzMzZkMjI2NWMzNjAwMzFhOWMzNWU5YmY2NjU4Njk2NmY4MzBmZWE2MTY1MzhlYjc3MDUzZGU5ODE4N0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t",
   },
 };
 
@@ -258,8 +301,8 @@ function HomeAbout() {
     <section className="py-12">
       <Container>
         <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <h2 className="font-display text-3xl">About</h2>
+          <Card className="card-hover-red">
+            <h2 className="font-display text-3xl section-title">About</h2>
             <p className="mt-3 text-zinc-700">{site.about.blurb}</p>
             <ul className="mt-4 space-y-2 text-zinc-700 list-disc pl-5">
               {site.about.highlights.map((h, i) => (
@@ -267,13 +310,13 @@ function HomeAbout() {
               ))}
             </ul>
           </Card>
-          <Card>
+          <Card className="card-hover-red">
             <h3 className="text-xl font-medium">Get started</h3>
             <div className="mt-3 grid gap-3">
-              <a href={site.hero.ctaLink} className="rounded-xl border px-4 py-3 hover:bg-zinc-50">
+              <a href={site.hero.ctaLink} className="rounded-xl border px-4 py-3 hover:bg-zinc-50 link-red">
                 Membership form
               </a>
-              <a href="#events" className="rounded-xl border px-4 py-3 hover:bg-zinc-50">
+              <a href="#events" className="rounded-xl border px-4 py-3 hover:bg-zinc-50 link-red">
                 See upcoming events
               </a>
             </div>
@@ -284,13 +327,138 @@ function HomeAbout() {
   );
 }
 
+/* ===== FAQ (accordion) ===== */
+function FAQ() {
+  const faqs = [
+    {
+      q: "What is APPHO and what does it stand for?",
+      a: "APPHO stands for the Aztec Pre-Professional Health Organization. We are a student-run organization at SDSU dedicated to supporting students pursuing careers in the health professions, including medicine, dentistry, pharmacy, optometry, physician assistant, and more."
+    },
+    { q: "Who can join APPHO?",
+      a: "APPHO is open to all SDSU students interested in health-related careers, regardless of major or year."
+    },
+    { q: "What makes APPHO different from other pre-health clubs on campus?",
+      a: "Our interdisciplinary focus welcomes students across all health professions. We prioritize community, mentorship, professional development, and networking."
+    },
+    { q: "What kind of events does APPHO host?",
+      a: "Guest speaker panels, application workshops, volunteer opportunities, socials, and collaborations with other orgs and departments."
+    },
+    { q: "How does APPHO support students preparing for grad/professional school?",
+      a: "Workshops, Q&As with professionals, peer mentorship, networking, clinical/volunteer connections, and resources for exams and timelines."
+    },
+    { q: "Are there leadership opportunities in APPHO?",
+      a: "Yes—executive board positions, committees, and event roles are available each year."
+    },
+    { q: "What is the time commitment like for members?",
+      a: "Flexible. We typically hold weekly meetings plus optional events. Participate as much as you can."
+    },
+    { q: "Is there a membership fee?",
+      a: "Yes, a small fee supports club activities. Amount and payment details are announced each semester; financial accommodations may be available."
+    },
+    { q: "How can I stay connected with APPHO?",
+      a: "Instagram @appho.sdsu, GroupMe (link below), email list (new member form), GBMs, and this website."
+    },
+    { q: "How do I get started?",
+      a: "1) Fill out the new member form, 2) join our GroupMe, 3) attend a GBM, 4) follow us on Instagram."
+    },
+  ];
+
+  return (
+    <section className="py-12">
+      <Container>
+        <h2 className="font-display text-3xl section-title">FAQ</h2>
+        <div className="mt-4">
+          {faqs.map((item, i) => (
+            <details className="faq" key={i}>
+              <summary>
+                <span>{item.q}</span>
+                <span className="faq-caret">›</span>
+              </summary>
+              <div className="mt-2 text-zinc-700">{item.a}</div>
+            </details>
+          ))}
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+/* ===== Photos (placeholder grid) ===== */
+function Photos() {
+  const images = [
+    // Add real URLs later: "/img/gallery/1.jpg", "/img/gallery/2.jpg", ...
+  ];
+  if (!images.length) {
+    return (
+      <section className="py-12">
+        <Container>
+          <h2 className="font-display text-3xl section-title">Photos</h2>
+          <p className="mt-3 text-zinc-600">
+            Gallery coming soon. We’ll feature photos from meetings, speakers, and service events.
+          </p>
+        </Container>
+      </section>
+    );
+  }
+  return (
+    <section className="py-12">
+      <Container>
+        <h2 className="font-display text-3xl section-title">Photos</h2>
+        <div className="mt-4 grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
+          {images.map((src, i) => (
+            <div key={i} className="overflow-hidden rounded-xl border card-hover-red">
+              <img src={src} alt={`APPHO ${i+1}`} className="w-full h-40 object-cover" />
+            </div>
+          ))}
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+/* ===== Password-gated Members Calendar button ===== */
+function MembersCalendar() {
+  const [pwd, setPwd] = useState("");
+  const ok = pwd === site.members.calendarPassword;
+
+  return (
+    <div className="mt-6 rounded-2xl border p-5 bg-white card-hover-red">
+      <h3 className="font-display text-2xl section-title">Members Calendar</h3>
+      {!ok ? (
+        <>
+          <p className="mt-2 text-sm text-zinc-600">Enter the members password to access the calendar link.</p>
+          <input
+            type="password"
+            value={pwd}
+            onChange={(e) => setPwd(e.target.value)}
+            placeholder="Password"
+            className="mt-3 w-full rounded-lg border px-3 py-2"
+          />
+        </>
+      ) : (
+        <div className="mt-3">
+          <a
+            className="rounded-xl px-4 py-2 bg-appho-dark text-white inline-block hover:opacity-90"
+            href={site.members.calendarLink}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Open Members Calendar
+          </a>
+          <p className="mt-2 text-xs text-zinc-500">Please don’t share this link publicly.</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Membership() {
   return (
     <section className="py-12">
       <Container>
         <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <h2 className="font-display text-3xl">Membership</h2>
+          <Card className="card-hover-red">
+            <h2 className="font-display text-3xl section-title">Membership</h2>
             <p className="mt-2 text-zinc-600">{site.membership.intro}</p>
             <ul className="mt-4 space-y-2 text-zinc-700 list-disc pl-5">
               {site.membership.benefits.map((b, i) => (
@@ -306,14 +474,14 @@ function Membership() {
               </p>
             )}
           </Card>
-          <Card>
+          <Card className="card-hover-red">
             <h3 className="text-xl font-medium">Join the club</h3>
             <div className="mt-3 grid gap-3">
               {site.membership.howToJoin.map((x, i) => (
                 <a
                   key={i}
                   href={x.href}
-                  className="flex items-center justify-between rounded-xl border px-4 py-3 hover:bg-zinc-50"
+                  className="flex items-center justify-between rounded-xl border px-4 py-3 hover:bg-zinc-50 link-red"
                 >
                   <span>{x.label}</span>
                 </a>
@@ -333,7 +501,7 @@ function AdminInline() {
   const [pwd, setPwd] = useState("");
   const ok = pwd === site.admin.password;
   return (
-    <Card>
+    <Card className="card-hover-red">
       <div className="flex items-center gap-2">
         <Shield className="h-5 w-5" />
         <h3 className="font-display text-2xl">Officer / Admin</h3>
@@ -352,7 +520,7 @@ function AdminInline() {
       ) : (
         <div className="mt-4">
           {site.admin.sheetLink ? (
-            <a className="underline" href={site.admin.sheetLink} target="_blank" rel="noreferrer">
+            <a className="underline link-red" href={site.admin.sheetLink} target="_blank" rel="noreferrer">
               Open admin spreadsheet
             </a>
           ) : (
@@ -371,7 +539,7 @@ function Speakers() {
   return (
     <section className="py-12">
       <Container>
-        <h2 className="font-display text-3xl">Speakers</h2>
+        <h2 className="font-display text-3xl section-title">Speakers</h2>
         {!hasUpcoming ? (
           <p className="mt-3 text-zinc-600">Add your upcoming speakers in the site.speakers.upcoming list.</p>
         ) : null}
@@ -393,7 +561,7 @@ function Speakers() {
 
 function SpeakerCard({ name, role, topic, date, link, tag }) {
   return (
-    <article className="relative p-5 rounded-2xl bg-white border border-zinc-200 text-zinc-900 shadow-sm">
+    <article className="relative p-5 rounded-2xl bg-white border border-zinc-200 text-zinc-900 shadow-sm card-hover-red">
       {tag && (
         <span className="absolute -top-2 -right-2 px-2 py-0.5 text-xs rounded-full bg-appho-red text-white shadow">
           {tag}
@@ -407,7 +575,7 @@ function SpeakerCard({ name, role, topic, date, link, tag }) {
       <div className="mt-3 flex items-center justify-between text-sm text-zinc-600">
         <span>{date}</span>
         {link && (
-          <a className="font-semibold text-appho-red hover:underline" href={link} target="_blank" rel="noreferrer">
+          <a className="font-semibold link-red" href={link} target="_blank" rel="noreferrer">
             Details
           </a>
         )}
@@ -420,13 +588,13 @@ function People() {
   return (
     <section className="py-12">
       <Container>
-        <h2 className="font-display text-3xl">Exec. Board</h2>
+        <h2 className="font-display text-3xl section-title">Exec. Board</h2>
         <p className="mt-2 text-zinc-600">{site.people.intro}</p>
         <p className="text-xs text-zinc-500">{site.people.note}</p>
         <h3 className="mt-6 font-semibold flex items-center gap-2"><Users className="h-4 w-4" /> Executive Board</h3>
         <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {site.people.officers.map((p, i) => (
-            <Card key={i}>
+            <Card key={i} className="card-hover-red">
               <div
                 className="aspect-[4/5] w-full rounded-xl bg-cover bg-center"
                 style={{ backgroundImage: `url(${p.photo})` }}
@@ -437,7 +605,7 @@ function People() {
                 {p.email && (
                   <a
                     href={`mailto:${p.email}`}
-                    className="mt-2 inline-flex items-center gap-2 rounded-lg border px-3 py-1 text-sm hover:bg-zinc-50"
+                    className="mt-2 inline-flex items-center gap-2 rounded-lg border px-3 py-1 text-sm hover:bg-zinc-50 link-red"
                   >
                     <Mail className="h-4 w-4" /> Email
                   </a>
@@ -451,7 +619,7 @@ function People() {
             <h3 className="mt-10 font-semibold">Advisors</h3>
             <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {site.people.advisors.map((p, i) => (
-                <Card key={i}>
+                <Card key={i} className="card-hover-red">
                   <div
                     className="aspect-[4/5] w-full rounded-xl bg-cover bg-center"
                     style={{ backgroundImage: `url(${p.photo})` }}
@@ -460,7 +628,7 @@ function People() {
                     <div className="font-semibold">{p.name}</div>
                     <div className="text-sm text-zinc-600">{p.role}</div>
                     {p.email && (
-                      <a href={`mailto:${p.email}`} className="mt-2 inline-block underline text-sm">
+                      <a href={`mailto:${p.email}`} className="mt-2 inline-block underline text-sm link-red">
                         {p.email}
                       </a>
                     )}
@@ -479,19 +647,13 @@ function Events() {
   return (
     <section id="events" className="py-12">
       <Container>
-        <h2 className="font-display text-3xl">Events</h2>
+        <h2 className="font-display text-3xl section-title">Events</h2>
         <p className="mt-2 text-zinc-600">{site.events.intro}</p>
-        <div className="mt-4 overflow-hidden rounded-2xl border">
+        <div className="mt-4 overflow-hidden rounded-2xl border card-hover-red">
           <iframe title="Google Calendar" src={site.events.calendarSrc} style={{ border: 0 }} className="h-[720px] w-full" />
         </div>
-        {site.events.addCalendarLink && (
-          <a
-            href={site.events.addCalendarLink}
-            className="mt-4 inline-flex items-center gap-2 rounded-xl border px-4 py-2 hover:bg-zinc-50"
-          >
-            <Calendar className="h-4 w-4" /> {site.events.addCalendarText}
-          </a>
-        )}
+        {/* Password-gated members calendar button */}
+        <MembersCalendar />
       </Container>
     </section>
   );
@@ -502,18 +664,18 @@ function Contact() {
     <section className="py-12">
       <Container>
         <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <h2 className="font-display text-3xl">Contact</h2>
+          <Card className="card-hover-red">
+            <h2 className="font-display text-3xl section-title">Contact</h2>
             <div className="mt-3 space-y-3 text-sm text-zinc-700">
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4" />
-                <a className="underline" href={`mailto:${site.contact.email}`}>
+                <a className="underline link-red" href={`mailto:${site.contact.email}`}>
                   {site.contact.email}
                 </a>
               </div>
               <div className="flex items-center gap-2">
                 <Instagram className="h-4 w-4" />
-                <a className="underline" href={site.contact.instagram}>
+                <a className="underline link-red" href={site.contact.instagram}>
                   Instagram
                 </a>
               </div>
@@ -521,14 +683,14 @@ function Contact() {
                 <Globe className="h-4 w-4" /> {site.contact.address}
               </div>
             </div>
-            <a href={site.contact.formTo} className="mt-4 inline-block rounded-xl border px-4 py-2 hover:bg-zinc-50">
+            <a href={site.contact.formTo} className="mt-4 inline-block rounded-xl border px-4 py-2 hover:bg-zinc-50 link-red">
               Email us
             </a>
           </Card>
-          <Card>
+          <Card className="card-hover-red">
             <h3 className="text-xl font-medium">Questions about membership?</h3>
             <p className="mt-2 text-zinc-600">We will get back to you within a few days during the semester.</p>
-            <a href={site.hero.ctaLink} className="mt-4 inline-block rounded-xl border px-4 py-2 hover:bg-zinc-50">
+            <a href={site.hero.ctaLink} className="mt-4 inline-block rounded-xl border px-4 py-2 hover:bg-zinc-50 link-red">
               Join form
             </a>
           </Card>
@@ -551,13 +713,13 @@ function Footer() {
           <div className="text-sm text-zinc-300">
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4" />
-              <a href={`mailto:${site.contact.email}`} className="underline">
+              <a href={`mailto:${site.contact.email}`} className="underline link-red">
                 {site.contact.email}
               </a>
             </div>
             <div className="mt-2 flex items-center gap-2">
               <Instagram className="h-4 w-4" />
-              <a href={site.contact.instagram} className="underline">
+              <a href={site.contact.instagram} className="underline link-red">
                 Instagram
               </a>
             </div>
@@ -594,6 +756,8 @@ export default function ApphoSite() {
           <>
             <Hero />
             <HomeAbout />
+            <FAQ />
+            <Photos />
           </>
         );
     }
