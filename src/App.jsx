@@ -140,10 +140,10 @@ const site = {
   people: {
     intro: "Meet the leadership team",
     officers: [
-      { name: "Avery Lee", role: "President", photo: "https://images.unsplash.com/photo-1541534401786-2077eed87a54?q=80&w=800&auto=format&fit=crop", email: "avery@apphosdsu.com" },
-      { name: "Sam Patel", role: "VP, Programs", photo: "https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=800&auto=format&fit=crop", email: "sam@apphosdsu.com" },
-      { name: "Mia Rodriguez", role: "Treasurer", photo: "https://images.unsplash.com/photo-1556157382-97eda2d62296?q=80&w=800&auto=format&fit=crop", email: "mia@apphosdsu.com" },
-      { name: "Leo Nguyen", role: "Outreach Lead", photo: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=800&auto=format&fit=crop", email: "leo@apphosdsu.com" },
+      { name: "Avi", role: "President", photo: "", email: "avery@apphosdsu.com" },
+      { name: "avi", role: "VP, Programs", photo: "", email: "sam@apphosdsu.com" },
+      { name: "avi", role: "Treasurer", photo: "" },
+      { name: "avi", role: "Outreach Lead", photo: "", email: "leo@apphosdsu.com" },
     ],
     advisors: [
       // { name: "Faculty Advisor", role: "Advisor", photo: "", email: "" },
