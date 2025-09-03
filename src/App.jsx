@@ -8,7 +8,7 @@
 import { useMemo, useState } from "react";
 import { Calendar, Users, Mail, Instagram, Globe, Shield } from "lucide-react";
 
-// Inject Google Fonts
+// Inject Google Fonts + brand tokens
 function HeadStyle() {
   return (
     <>
@@ -19,10 +19,22 @@ function HeadStyle() {
         rel="stylesheet"
       />
       <style>{`
-        :root { --appho-red: #A6192E; }
-        .font-display { font-family: 'Oswald', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji','Segoe UI Emoji', 'Segoe UI Symbol', sans-serif; }
-        .font-sans { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif; }
-      `}</style>
+  :root{
+    --appho-bright-red:#D41736; /* Bright Red */
+    --appho-dark-red:#A6192E;   /* Dark Red */
+    --appho-charcoal:#2D2828;   /* Charcoal */
+    --appho-black:#000000;      /* Black */
+  }
+  .font-display{font-family:'Oswald',system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol',sans-serif;}
+  .font-sans{font-family:'Inter',ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif;}
+
+  /* brand utility classes */
+  .bg-appho-red{background-color:var(--appho-bright-red);} 
+  .bg-appho-dark{background-color:var(--appho-dark-red);} 
+  .bg-appho-black{background-color:var(--appho-black);} 
+  .text-appho-red{color:var(--appho-bright-red);} 
+  .border-appho-charcoal{border-color:var(--appho-charcoal);} 
+`}</style>
     </>
   );
 }
@@ -33,59 +45,59 @@ function HeadStyle() {
 const site = {
   name: "APPHO @ SDSU",
   year: "2025–26",
-  tagline: "Build • Ship • Learn together",
+  tagline: "Building Passionate Healthcare Providers",
   brand: {
     logoUrl: "/img/appho-logo.png", // replace with your logo URL or leave blank to hide
-    primaryColor: "bg-red-600", // SDSU red
-    headerColor: "bg-black", // SDSU black
+    primaryColor: "bg-appho-red", // SDSU red
+    headerColor: "bg-appho-black", // SDSU black
   },
   // Navigation — Membership includes Admin. No APPHO4LIFE.
   nav: [
     { key: "membership", label: "Membership" },
     { key: "speakers", label: "Speakers" },
-    { key: "people", label: "People" },
+    { key: "people", label: "Exec. Board" },
     { key: "events", label: "Events" },
     { key: "contact", label: "Contact" },
   ],
   hero: {
     headline: "APPHO @ SDSU",
-    sub: "Build • Ship • Learn together",
+    sub: "Building Passionate Healthcare Providers",
     ctaText: "Join now",
     ctaLink: "https://forms.gle/example-membership", // replace
     image: "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?q=80&w=1600&auto=format&fit=crop",
   },
   about: {
     blurb:
-      "APPHO is a student organization at SDSU where members build projects, learn practical skills, and grow a supportive network for careers in tech and related fields.",
+      "APPHO is a mentorship and philanthropic organization that works with students who plan on pursuing a career in the pre‑health field. We support paths into medicine, dentistry, pharmacy, optometry, physical therapy, physician associate, and more.",
     highlights: [
-      "Hands-on workshops and weekly meetups",
-      "Project pods that ship real work",
-      "Guest speakers and career prep",
+      "Clinical volunteering and community outreach",
+      "Application prep: personal statements, interviews, CASPA/AMCAS/AADSAS",
+      "Shadowing and a pre‑health speaker series with practicing providers",
     ],
   },
   membership: {
     intro: "Membership is open to all SDSU students. No experience required.",
     benefits: [
-      "Weekly meetings with hands-on workshops",
-      "Speaker series with founders and engineers",
-      "Project pods and resume-ready experience",
-      "Priority access to hackathons and sponsor swag",
+      "Weekly meetings with pre‑health workshops",
+      "Clinical, shadowing, and volunteering opportunities",
+      "Application and test prep resources (MCAT/DAT/OAT/PA‑CAT)",
+      "Mentorship and networking with providers and alumni",
     ],
     howToJoin: [
       { label: "Apply on Google Form", href: "https://forms.gle/example-membership" },
-      { label: "Join our Discord", href: "https://discord.gg/example" },
+      { label: "Join our GroupMe", href: "https://groupme.com/join_group/YOUR-GROUPME-CODE" },
       { label: "Get the newsletter", href: "https://apphosdsu.com/newsletter" },
     ],
     dues: { show: true, text: "Annual dues: $20. Scholarships available. Pay after your 2nd meeting." },
   },
   speakers: {
-    intro: "Upcoming and past speakers",
+    intro: "Pre‑Health speaker series — physicians, dentists, PAs, pharmacists, PT/OT, optometrists, and more.",
     upcoming: [
-      // { name: "Jane Doe", role: "PM, BigCo", topic: "From idea to launch", date: "Sep 18, 2025", link: "#" },
+      // { name: "Dr. Jordan Kim", role: "Emergency Medicine, Scripps", topic: "Paths to MD/DO", date: "Oct 2, 2025", link: "#" },
     ],
     past: [
-      { name: "Alex Rivera", role: "Founder, BuildLab", topic: "Zero to one projects", date: "Apr 3, 2025", link: "#" },
-      { name: "Priya Shah", role: "Security Eng, CloudCo", topic: "Threat modeling 101", date: "Mar 6, 2025", link: "#" },
+      { name: "Alex Rivera, PA‑C", role: "Emergency Medicine", topic: "Becoming a Physician Associate", date: "Apr 3, 2025", link: "#" },
+      { name: "Priya Shah, PharmD", role: "Clinical Pharmacist", topic: "Hospital Pharmacy 101", date: "Mar 6, 2025", link: "#" },
     ],
   },
   people: {
@@ -160,7 +172,7 @@ function Nav({ current, setCurrent }) {
                 <button
                   key={item.key}
                   onClick={() => setCurrent(item.key)}
-                  className={`rounded-xl px-3 py-2 text-sm transition ${active ? "bg-white text-zinc-900" : "hover:bg-white/10"}`}
+                  className={`rounded-xl px-3 py-2 text-sm transition ${active ? "bg-appho-red text-white" : "hover:bg-white/10"}`}
                 >
                   {item.label}
                 </button>
@@ -184,7 +196,7 @@ function Nav({ current, setCurrent }) {
                 <button
                   key={item.key}
                   onClick={() => setCurrent(item.key)}
-                  className={`rounded-lg px-2 py-1 text-xs ${active ? "bg-white text-zinc-900" : "bg-white/10"}`}
+                  className={`rounded-lg px-2 py-1 text-xs ${active ? "bg-appho-red text-white" : "bg-white/10"}`}
                 >
                   {item.label}
                 </button>
@@ -199,13 +211,16 @@ function Nav({ current, setCurrent }) {
 
 function Hero() {
   return (
-    <section className="bg-gradient-to-b from-black to-zinc-900 text-white py-16">
+    <section
+      className="text-white py-16"
+      style={{ background: "linear-gradient(180deg, var(--appho-dark-red) 0%, var(--appho-bright-red) 100%)" }}
+    >
       <Container>
         <div className="grid items-center gap-8 md:grid-cols-2">
           <div>
             <h1 className="font-display text-5xl font-semibold tracking-tight">{site.hero.headline}</h1>
             <p className="mt-3 text-lg text-zinc-200">{site.hero.sub}</p>
-            <p className="mt-1 text-sm text-zinc-400">{site.year}</p>
+            <p className="mt-1 text-sm text-zinc-200/80">{site.year}</p>
             <div className="mt-6 flex items-center gap-3">
               <a
                 href={site.hero.ctaLink}
@@ -230,8 +245,12 @@ function Hero() {
   );
 }
 
-function Card({ children }) {
-  return <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">{children}</div>;
+function Card({ children, className = "" }) {
+  return (
+    <div className={`rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm ${className}`}>
+      {children}
+    </div>
+  );
 }
 
 function HomeAbout() {
@@ -279,7 +298,10 @@ function Membership() {
               ))}
             </ul>
             {site.membership.dues?.show && (
-              <p className="mt-4 rounded-lg bg-red-50 p-3 text-red-900 text-sm border border-red-200">
+              <p
+                className="mt-4 rounded-lg p-3 text-sm border"
+                style={{ backgroundColor: "#fff", color: "#111", borderColor: "var(--appho-bright-red)" }}
+              >
                 {site.membership.dues.text}
               </p>
             )}
@@ -371,9 +393,9 @@ function Speakers() {
 
 function SpeakerCard({ name, role, topic, date, link, tag }) {
   return (
-    <article className="relative p-5 rounded-2xl bg-white border border-zinc-200 shadow-sm">
+    <article className="relative p-5 rounded-2xl bg-white border border-zinc-200 text-zinc-900 shadow-sm">
       {tag && (
-        <span className="absolute -top-2 -right-2 px-2 py-0.5 text-xs rounded-full bg-red-600 text-white shadow">
+        <span className="absolute -top-2 -right-2 px-2 py-0.5 text-xs rounded-full bg-appho-red text-white shadow">
           {tag}
         </span>
       )}
@@ -385,7 +407,7 @@ function SpeakerCard({ name, role, topic, date, link, tag }) {
       <div className="mt-3 flex items-center justify-between text-sm text-zinc-600">
         <span>{date}</span>
         {link && (
-          <a className="font-semibold text-red-700 hover:underline" href={link} target="_blank" rel="noreferrer">
+          <a className="font-semibold text-appho-red hover:underline" href={link} target="_blank" rel="noreferrer">
             Details
           </a>
         )}
@@ -398,10 +420,10 @@ function People() {
   return (
     <section className="py-12">
       <Container>
-        <h2 className="font-display text-3xl">People</h2>
+        <h2 className="font-display text-3xl">Exec. Board</h2>
         <p className="mt-2 text-zinc-600">{site.people.intro}</p>
         <p className="text-xs text-zinc-500">{site.people.note}</p>
-        <h3 className="mt-6 font-semibold flex items-center gap-2"><Users className="h-4 w-4" /> Officers</h3>
+        <h3 className="mt-6 font-semibold flex items-center gap-2"><Users className="h-4 w-4" /> Executive Board</h3>
         <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {site.people.officers.map((p, i) => (
             <Card key={i}>
@@ -518,15 +540,15 @@ function Contact() {
 
 function Footer() {
   return (
-    <footer className="border-t bg-white py-8">
+    <footer className="border-t border-zinc-800 bg-black text-white py-8">
       <Container>
         <div className="grid gap-6 md:grid-cols-3">
           <div>
             <div className="text-lg font-display">{site.name}</div>
-            <div className="text-zinc-600">{site.tagline}</div>
+            <div className="text-zinc-300">{site.tagline}</div>
             <div className="text-zinc-500 text-xs mt-1">{site.year}</div>
           </div>
-          <div className="text-sm text-zinc-700">
+          <div className="text-sm text-zinc-300">
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4" />
               <a href={`mailto:${site.contact.email}`} className="underline">
@@ -543,7 +565,7 @@ function Footer() {
               <Globe className="h-4 w-4" /> {site.contact.address}
             </div>
           </div>
-          <div className="text-sm text-zinc-500">
+          <div className="text-sm text-zinc-400">
             <div>© {new Date().getFullYear()} APPHO. All rights reserved.</div>
           </div>
         </div>
