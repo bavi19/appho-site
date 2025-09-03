@@ -587,9 +587,20 @@ function People() {
 
 function Events() {
   const [pwd, setPwd] = useState("");
-  const ok = !site.events.protected || pwd === site.events.password;
+  const [unlocked, setUnlocked] = useState(!site.events.protected); // if not protected, show immediately
+  const [error, setError] = useState("");
 
-  // Try to auto-build an EMBED src from the members.calendarLink cid=
+  const handleUnlock = (e) => {
+    e.preventDefault();
+    if (pwd === site.events.password) {
+      setUnlocked(true);
+      setError("");
+    } else {
+      setError("Incorrect password. Please try again.");
+    }
+  };
+
+  // Try to auto-build an EMBED src from the members.calendarLink (cid=...)
   const embedSrc = useMemo(() => {
     try {
       const raw = site.members?.calendarLink || "";
@@ -609,28 +620,37 @@ function Events() {
         <h2 className="section-title font-display text-3xl">Events</h2>
         <p className="mt-2 text-zinc-600">{site.events.intro}</p>
 
-        {!ok ? (
-          <div className="mt-6 max-w-xl">
+        {!unlocked ? (
+          <form onSubmit={handleUnlock} className="mt-6 max-w-xl">
             <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm card-hover-red">
               <p className="text-sm text-zinc-600">{site.events.gateNote}</p>
-              <label className="mt-4 block text-sm font-medium text-zinc-800">Enter password</label>
+              <label className="mt-4 block text-sm font-medium text-zinc-800" htmlFor="eventsPwd">
+                Enter password
+              </label>
               <input
+                id="eventsPwd"
                 type="password"
                 value={pwd}
                 onChange={(e) => setPwd(e.target.value)}
                 placeholder="••••••••"
                 className="mt-2 w-full rounded-lg border border-zinc-300 px-3 py-2"
               />
-              <button className="mt-4 rounded-xl bg-appho-red px-4 py-2 text-white btn">Unlock</button>
+              {error && <div className="mt-2 text-sm text-red-600">{error}</div>}
+              <button
+                type="submit"
+                className="mt-4 rounded-xl bg-appho-red px-4 py-2 text-white btn"
+              >
+                Unlock
+              </button>
             </div>
-          </div>
+          </form>
         ) : (
           <div className="mt-6 overflow-hidden rounded-2xl border card-hover-red">
             <iframe title="Google Calendar" src={embedSrc} style={{ border: 0 }} className="h-[720px] w-full" />
           </div>
         )}
 
-        {ok && site.events.addCalendarLink && (
+        {unlocked && site.events.addCalendarLink && (
           <a
             href={site.events.addCalendarLink}
             className="mt-4 inline-flex items-center gap-2 rounded-xl border px-4 py-2 hover:bg-zinc-50 btn"
