@@ -263,7 +263,7 @@ people: {
   },
   admin: {
     password: "APPHO25",
-    sheetLink: "",
+    sheetLink: "https://docs.google.com/spreadsheets/d/19JQVcTZ58MAwIgaBoy7A_La61acvWyKioKNIQUVdrmM/edit?usp=sharing",
   },
   members: {
     calendarPassword: "APPHO25",
@@ -552,16 +552,40 @@ function Membership() {
 
 function AdminInline() {
   const [pwd, setPwd] = useState("");
-  const ok = pwd === site.admin.password;
+  const [unlocked, setUnlocked] = useState(false);
+  const [error, setError] = useState("");
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    // allow multiple accepted passwords if you ever pass an array
+    const allowed = Array.isArray(site.admin.password)
+      ? site.admin.password
+      : [site.admin.password];
+
+    const ok = allowed.some(
+      (p) => String(p).trim().toLowerCase() === pwd.trim().toLowerCase()
+    );
+
+    if (ok) {
+      setUnlocked(true);
+      setError("");
+    } else {
+      setError("Incorrect password. Please try again.");
+    }
+  };
+
   return (
     <Card>
       <div className="flex items-center gap-2">
         <Shield className="h-5 w-5" />
         <h3 className="font-display text-2xl">Officer / Members</h3>
       </div>
-      {!ok ? (
-        <div className="mt-4">
-          <p className="text-zinc-600 text-sm">Enter the password to access the spreadsheet.</p>
+
+      {!unlocked ? (
+        <form onSubmit={onSubmit} className="mt-4">
+          <p className="text-zinc-600 text-sm">
+            Enter the password to access the spreadsheet.
+          </p>
           <input
             type="password"
             value={pwd}
@@ -569,11 +593,15 @@ function AdminInline() {
             placeholder="Password"
             className="mt-3 w-full rounded-lg border px-3 py-2"
           />
-        </div>
+          {error && <div className="mt-2 text-sm text-red-600">{error}</div>}
+          <button type="submit" className="mt-3 btn-pill btn-solid-red">
+            Unlock
+          </button>
+        </form>
       ) : (
         <div className="mt-4">
           {site.admin.sheetLink ? (
-            <a className="" href={site.admin.sheetLink} target="_blank" rel="noreferrer">
+            <a href={site.admin.sheetLink} target="_blank" rel="noreferrer" className="btn-pill btn-outline-red">
               Open admin spreadsheet
             </a>
           ) : (
@@ -586,6 +614,7 @@ function AdminInline() {
     </Card>
   );
 }
+
 
 function Speakers() {
   const hasUpcoming = site.speakers.upcoming && site.speakers.upcoming.length > 0;
