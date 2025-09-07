@@ -262,7 +262,7 @@ people: {
     formTo: "mailto:appho.sdsu@gmail.com?subject=APPHO%20Inquiry",
   },
   admin: {
-    password: "appho-admin",
+    password: "APPHO25",
     sheetLink: "",
   },
   members: {
