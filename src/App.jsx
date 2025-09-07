@@ -1,7 +1,7 @@
 // APPHO @ SDSU — single file React site
 // Edit only the `site` object below to update copy, colors, images, officers, speakers, links, and passwords.
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Calendar, Users, Mail, Instagram, Globe, Shield } from "lucide-react";
 
 // Inject Google Fonts + brand tokens + site-wide styles
@@ -15,68 +15,130 @@ function HeadStyle() {
         rel="stylesheet"
       />
       <style>{`
-  :root{
-    --appho-bright-red:#D41736; /* Bright Red */
-    --appho-dark-red:#A6192E;   /* Dark Red */
-    --appho-charcoal:#2D2828;   /* Charcoal */
-    --appho-black:#000000;      /* Black */
-  }
+/* ===== People card 3D flip ===== */
+.card-3d{ perspective:1000px; }
+.card-3d-inner{
+  position:relative; transform-style:preserve-3d; transition: transform .6s ease;
+  border-radius:12px; overflow:hidden;
+}
+.card-3d:hover .card-3d-inner{ transform: rotateY(180deg); }
+.card-face{
+  position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+}
+.card-front{ background:#f8fafc; }
+.card-back{
+  background: linear-gradient(180deg, var(--appho-dark-red), var(--appho-bright-red));
+  color:#fff; transform: rotateY(180deg);
+  display:flex; align-items:center; justify-content:center; padding:16px; text-align:left;
+}
 
-  .font-display{font-family:'Oswald',system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol',sans-serif;}
-  .font-sans{font-family:'Inter',ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif;}
+/* ===== Get started layout helpers ===== */
+.stack-card{ display:flex; flex-direction:column; }
+.stack-fill{ display:flex; flex-direction:column; gap:16px; flex:1; }
+.stack-fill .btn-pill{ flex:1; min-height:64px; width:100%; } /* tall, full width */
 
-  /* brand utility classes */
-  .bg-appho-red{background-color:var(--appho-bright-red);}
-  .bg-appho-dark{background-color:var(--appho-dark-red);}
-  .bg-appho-black{background-color:var(--appho-black);}
-  .text-appho-red{color:var(--appho-bright-red);}
-  .border-appho-charcoal{border-color:var(--appho-charcoal);}
+/* keep the outer "Card" hover outline you already use */
+.card-hover-red:hover{ border-color: var(--appho-dark-red) !important; }
 
-  /* global link accent */
-  a { transition: color .2s ease, background-color .2s ease, box-shadow .2s ease, border-color .2s ease; }
-  a:hover { color: var(--appho-bright-red); }
+/* LinkedIn icon button */
+.btn-linkedin{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:44px; height:44px; border-radius:9999px;
+  border:1px solid #e5e7eb; background:#fff; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.btn-linkedin:hover{ transform: translateY(-1px); box-shadow:0 8px 24px rgba(0,0,0,.08); border-color: var(--appho-dark-red); }
 
-  /* button-like links (no underline) */
-  a.btn { text-decoration: none !important; }
-  a.btn:hover { text-decoration: none !important; }
+:root{
+  --appho-bright-red:#D41736; /* Bright Red */
+  --appho-dark-red:#A6192E;   /* Dark Red */
+  --appho-charcoal:#2D2828;
+  --appho-black:#000000;
 
-  /* section title accent (thin red bar on the left) */
-  .section-title{
-    position: relative; padding-left: 14px;
-  }
-  .section-title::before{
-    content:""; position:absolute; left:0; top:4px; bottom:4px; width:4px; border-radius:4px;
-    background: linear-gradient(180deg, var(--appho-dark-red), var(--appho-bright-red));
-  }
+  /* soft surfaces for subtle red accents */
+  --red-surface:#FFF6F7;
+  --red-surface-2:#FFE9EC;
+}
 
-  /* card hover outline (used on Exec Board + Events + generic cards) */
-  .card-hover-red{
-    transition: box-shadow .2s ease, border-color .2s ease, transform .2s ease;
-  }
-  .card-hover-red:hover{
-    border-color: var(--appho-dark-red) !important;
-    box-shadow: 0 6px 22px rgba(166,25,46,.18);
-    transform: translateY(-1px);
-  }
+.font-display{font-family:'Oswald',system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol',sans-serif;}
+.font-sans{font-family:'Inter',ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif;}
 
-  /* simple accordion styling (FAQ) */
-  details.faq{
-    border:1px solid #e5e7eb; border-radius:12px; background:#fff; padding:12px 16px;
-  }
-  details.faq + details.faq{ margin-top:10px; }
-  details.faq[open]{ border-color: var(--appho-dark-red); box-shadow: 0 4px 16px rgba(166,25,46,.08); }
-  details.faq summary{
-    cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center;
-    font-weight:600;
-  }
-  details.faq summary::-webkit-details-marker{ display:none; }
-  .faq-caret{ transition: transform .2s ease; }
-  details[open] .faq-caret{ transform: rotate(90deg); }
+/* brand utility classes */
+.bg-appho-red{background-color:var(--appho-bright-red);}
+.bg-appho-dark{background-color:var(--appho-dark-red);}
+.bg-appho-black{background-color:var(--appho-black);}
+.text-appho-red{color:var(--appho-bright-red);}
+.border-appho-charcoal{border-color:var(--appho-charcoal);}
+
+/* pretty pill buttons (SDSU red base + light-up hover) */
+.btn-pill{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  border-radius:9999px; padding:12px 18px; font-weight:700; letter-spacing:.01em;
+  border:1px solid transparent; text-decoration:none !important;
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease, filter .15s ease, color .15s ease;
+}
+.btn-pill:active{ transform:translateY(0); }
+
+/* PRIMARY — solid SDSU red by default; lights up to brighter red on hover/focus */
+.btn-solid-red{
+  background: var(--appho-dark-red);  /* #A6192E */
+  color:#fff;
+  box-shadow: 0 10px 22px rgba(166,25,46,.28);
+}
+.btn-solid-red:hover,
+.btn-solid-red:focus-visible{
+  background: var(--appho-bright-red); /* #D41736 */
+  color:#fff;
+  box-shadow: 0 0 0 4px rgba(166,25,46,.18), 0 14px 28px rgba(166,25,46,.34);
+  transform: translateY(-1px);
+}
+
+/* SECONDARY / TERTIARY */
+.btn-outline-red{ background:#fff; color:#111; border-color:rgba(166,25,46,.35); }
+.btn-outline-red:hover,
+.btn-outline-red:focus-visible{ border-color:var(--appho-dark-red); box-shadow:0 8px 20px rgba(166,25,46,.12); }
+
+.btn-ghost{ background:var(--red-surface); color:#111; border-color:#ffd7dc; }
+.btn-ghost:hover,
+.btn-ghost:focus-visible{ background:var(--red-surface-2); border-color:var(--appho-dark-red); }
+
+/* Make the three "Get started" buttons fill the whole card vertically */
+.stack-fill .btn-pill{ width:100%; min-height:64px; }
+
+/* keep link hover color from fighting button text inside buttons */
+.btn-pill:hover{ color:inherit; }
+
+/* section title accent (thin red bar on the left) */
+.section-title{ position: relative; padding-left: 14px; }
+.section-title::before{
+  content:""; position:absolute; left:0; top:4px; bottom:4px; width:4px; border-radius:4px;
+  background: linear-gradient(180deg, var(--appho-dark-red), var(--appho-bright-red));
+}
+
+/* card hover outline (used on Exec Board + Events + generic cards) */
+.card-hover-red{ transition: box-shadow .2s ease, border-color .2s ease, transform .2s ease; }
+.card-hover-red:hover{
+  border-color: var(--appho-dark-red) !important;
+  box-shadow: 0 6px 22px rgba(166,25,46,.18);
+  transform: translateY(-1px);
+}
+
+/* simple accordion styling (FAQ) */
+details.faq{
+  border:1px solid #e5e7eb; border-radius:12px; background:#fff; padding:12px 16px;
+}
+details.faq + details.faq{ margin-top:10px; }
+details.faq[open]{ border-color: var(--appho-dark-red); box-shadow: 0 4px 16px rgba(166,25,46,.08); }
+details.faq summary{
+  cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center;
+  font-weight:600;
+}
+details.faq summary::-webkit-details-marker{ display:none; }
+.faq-caret{ transition: transform .2s ease; }
+details[open] .faq-caret{ transform: rotate(90deg); }
 `}</style>
     </>
   );
 }
-
 /* ==========================
    CONTENT — EDIT ME ONLY
 ========================== */
@@ -85,9 +147,9 @@ const site = {
   year: "2025–26",
   tagline: "Building Passionate Healthcare Providers",
   brand: {
-    logoUrl: "/img/appho-logo.png", // replace with your logo URL or leave blank to hide
-    primaryColor: "bg-appho-red",   // SDSU red
-    headerColor: "bg-appho-black",  // SDSU black
+    logoUrl: "/img/appho-logo.png",
+    primaryColor: "bg-appho-red",
+    headerColor: "bg-appho-black",
   },
   nav: [
     { key: "membership", label: "Membership" },
@@ -100,12 +162,12 @@ const site = {
     headline: "APPHO @ SDSU",
     sub: "Building Passionate Healthcare Providers",
     ctaText: "Join now",
-    ctaLink: "https://forms.gle/example-membership", // replace
+    ctaLink: "https://forms.gle/ofxQJF1izqCcK8dK6",
     image: "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?q=80&w=1600&auto=format&fit=crop",
   },
   about: {
     blurb:
-      "APPHO is a mentorship and philanthropic organization that works with students who plan on pursuing a career in the pre-health field. We support paths into medicine, dentistry, pharmacy, optometry, physical therapy, physician associate, and more.",
+      "APPHO is a mentorship and philanthropic organization that works with students who plan on pursuing a career in the pre-health field. We support paths into medicine, dentistry, pharmacy, optometry, physical therapy, physician assistant, and more.",
     highlights: [
       "Clinical volunteering and community outreach",
       "Application prep: personal statements, interviews, CASPA/AMCAS/AADSAS",
@@ -121,17 +183,15 @@ const site = {
       "Mentorship and networking with providers and alumni",
     ],
     howToJoin: [
-      { label: "Apply on Google Form", href: "https://forms.gle/example-membership" },
+      { label: "Apply on Google Form", href: "https://forms.gle/ofxQJF1izqCcK8dK6" },
       { label: "Join our GroupMe", href: "https://groupme.com/join_group/88026538/Srd3FVX5" },
       { label: "Get the newsletter", href: "https://apphosdsu.com/newsletter" },
     ],
-    dues: { show: true, text: "Annual dues: $20. Scholarships available. Pay after your 2nd meeting." },
+    dues: { show: true, text: "Annual dues: $30. Scholarships available. Pay on September 17th." },
   },
   speakers: {
     intro: "Pre-Health speaker series — physicians, dentists, PAs, pharmacists, PT/OT, optometrists, and more.",
-    upcoming: [
-      // { name: "Dr. Jordan Kim", role: "Emergency Medicine, Scripps", topic: "Paths to MD/DO", date: "Oct 2, 2025", link: "#" },
-    ],
+    upcoming: [],
     past: [
       { name: "Alex Rivera, PA-C", role: "Emergency Medicine", topic: "Becoming a Physician Associate", date: "Apr 3, 2025", link: "#" },
       { name: "Priya Shah, PharmD", role: "Clinical Pharmacist", topic: "Hospital Pharmacy 101", date: "Mar 6, 2025", link: "#" },
@@ -149,14 +209,11 @@ const site = {
   },
   events: {
     intro: "Members-only calendar.",
-    // If you have a public embed, you can still set it here:
     calendarSrc: "https://calendar.google.com/calendar/embed?src=c_classroom12345%40group.calendar.google.com&ctz=America%2FLos_Angeles",
     addCalendarText: "Add to your calendar",
     addCalendarLink: "",
-
-    // Gate settings
     protected: true,
-    password: "APPHO25", // change this
+    password: "APPHO25",
     gateNote: "Members only. Ask an officer for the password.",
   },
   contact: {
@@ -166,12 +223,11 @@ const site = {
     formTo: "mailto:appho.sdsu@gmail.com?subject=APPHO%20Inquiry",
   },
   admin: {
-    password: "appho-admin", // change this
-    sheetLink: "",           // paste your Google Sheet link here
+    password: "appho-admin",
+    sheetLink: "",
   },
-  // Members calendar link (non-embed) — used to auto-generate an embed when possible
   members: {
-    calendarPassword: "appho2024", // not used by Events gate; kept in case you want a separate gated link widget
+    calendarPassword: "appho2024",
     calendarLink:
       "https://calendar.google.com/calendar/u/0?cid=ODNkNWUzMzZkMjI2NWMzNjAwMzFhOWMzNWU5YmY2NjU4Njk2NmY4MzBmZWE2MTY1MzhlYjc3MDUzZGU5ODE4N0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t",
   },
@@ -186,7 +242,7 @@ function Container({ children }) {
 
 function Logo() {
   return (
-    <div className="flex items-center gap-3 cursor-pointer select-none">
+    <div className="flex items-center gap-3 cursor-pointer select-none" onClick={() => (window.location.hash = "home")}>
       {site.brand.logoUrl ? (
         <img
           src={site.brand.logoUrl}
@@ -200,22 +256,20 @@ function Logo() {
   );
 }
 
-function Nav({ current, setCurrent }) {
+function Nav({ current }) {
   return (
-    <header className={`sticky top-0 z-40 border-b border-zinc-800 ${site.brand.headerColor} text-white`}>
+    <header className={`sticky top-0 z-40 border-b border-zinc-900/70 ${site.brand.headerColor} text-white`}>
       <Container>
         <div className="flex h-16 items-center justify-between">
-          <div onClick={() => setCurrent("home")}>
-            <Logo />
-          </div>
+          <Logo />
           <nav className="hidden gap-1 md:flex">
             {site.nav.map((item) => {
               const active = current === item.key;
               return (
                 <button
                   key={item.key}
-                  onClick={() => setCurrent(item.key)}
-                  className={`rounded-xl px-3 py-2 text-sm transition ${active ? "bg-appho-red text-white" : "hover:bg-white/10"}`}
+                  onClick={() => (window.location.hash = item.key)}
+                  className={`rounded-xl px-3 py-2 text-sm transition ${active ? "bg-white/10" : "hover:bg-white/10"}`}
                 >
                   {item.label}
                 </button>
@@ -224,7 +278,7 @@ function Nav({ current, setCurrent }) {
           </nav>
           <a
             href={site.hero.ctaLink}
-            className={`hidden rounded-xl px-3 py-2 text-sm font-medium md:inline-block ${site.brand.primaryColor} text-white hover:opacity-90 btn`}
+            className="hidden md:inline-block btn-pill btn-solid-red px-3 py-2 text-sm font-medium"
           >
             {site.hero.ctaText}
           </a>
@@ -238,8 +292,8 @@ function Nav({ current, setCurrent }) {
               return (
                 <button
                   key={item.key}
-                  onClick={() => setCurrent(item.key)}
-                  className={`rounded-lg px-2 py-1 text-xs ${active ? "bg-appho-red text-white" : "bg-white/10"}`}
+                  onClick={() => (window.location.hash = item.key)}
+                  className={`rounded-lg px-2 py-1 text-xs ${active ? "bg-white/10 text-white" : "bg-white/10"}`}
                 >
                   {item.label}
                 </button>
@@ -256,22 +310,19 @@ function Hero() {
   return (
     <section
       className="text-white py-16"
-      style={{ background: "linear-gradient(180deg, var(--appho-dark-red) 0%, var(--appho-bright-red) 100%)" }}
+	style={{ background: "var(--appho-bright-red)" }}
     >
       <Container>
         <div className="grid items-center gap-8 md:grid-cols-2">
           <div>
             <h1 className="font-display text-5xl font-semibold tracking-tight">{site.hero.headline}</h1>
-            <p className="mt-3 text-lg text-zinc-200">{site.hero.sub}</p>
-            <p className="mt-1 text-sm text-zinc-200/80">{site.year}</p>
+            <p className="mt-3 text-lg text-zinc-100/90">{site.hero.sub}</p>
+            <p className="mt-1 text-sm text-zinc-100/70">{site.year}</p>
             <div className="mt-6 flex items-center gap-3">
-              <a
-                href={site.hero.ctaLink}
-                className={`rounded-xl px-4 py-2 ${site.brand.primaryColor} text-white font-medium hover:opacity-90 btn`}
-              >
+              <a href={site.hero.ctaLink} className="btn-pill btn-solid-red px-4 py-2 font-medium">
                 {site.hero.ctaText}
               </a>
-              <a href="#events" className="rounded-xl px-4 py-2 bg-white/10 hover:bg-white/20 btn">
+              <a href="#events" className="btn-pill btn-ghost">
                 See events
               </a>
             </div>
@@ -287,7 +338,6 @@ function Hero() {
     </section>
   );
 }
-
 function Card({ children, className = "" }) {
   return (
     <div className={`rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm card-hover-red ${className}`}>
@@ -299,76 +349,79 @@ function Card({ children, className = "" }) {
 function HomeAbout() {
   return (
     <section className="py-12">
-      <Container>
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <h2 className="font-display text-3xl section-title">About</h2>
-            <p className="mt-3 text-zinc-700">{site.about.blurb}</p>
-            <ul className="mt-4 space-y-2 text-zinc-700 list-disc pl-5">
-              {site.about.highlights.map((h, i) => (
-                <li key={i}>{h}</li>
-              ))}
-            </ul>
-          </Card>
-          <Card>
-            <h3 className="text-xl font-medium">Get started</h3>
-            <div className="mt-3 grid gap-3">
-              <a href={site.hero.ctaLink} className="rounded-xl border px-4 py-3 hover:bg-zinc-50 btn">
-                Membership form
-              </a>
-              <a href="#events" className="rounded-xl border px-4 py-3 hover:bg-zinc-50 btn">
-                See upcoming events
-              </a>
-            </div>
-          </Card>
-        </div>
-      </Container>
+      <div className="mx-auto max-w-6xl px-4 grid gap-6 md:grid-cols-2">
+        <Card>
+          <h2 className="font-display text-3xl section-title">About</h2>
+          <p className="mt-3 text-zinc-700">
+            APPHO is a mentorship and philanthropic organization that works with students pursuing careers in the health professions.
+          </p>
+          <ul className="mt-4 space-y-2 text-zinc-700 list-disc pl-5">
+            <li>Clinical volunteering and community outreach</li>
+            <li>Application prep: personal statements, interviews, CASPA/AMCAS/AADSAS</li>
+            <li>Shadowing and a pre-health speaker series with practicing providers</li>
+          </ul>
+        </Card>
+{/* Stacked actions that fill the whole card */}
+<Card className="stack-card">
+  <h3 className="text-xl font-medium mb-5">Get started</h3>
+<div className="stack-fill">
+  <a href={site.hero.ctaLink} className="btn-pill btn-solid-red w-full">
+    <Users className="h-4 w-4" /> Membership Form
+  </a>
+  <a href="#events" className="btn-pill btn-outline-red w-full">
+    <Calendar className="h-4 w-4" /> See Events
+  </a>
+  <a href="https://groupme.com/join_group/88026538/Srd3FVX5" className="btn-pill btn-ghost w-full">
+    <Users className="h-4 w-4" /> Join GroupMe
+  </a>
+</div>
+</Card>
+      </div>
     </section>
   );
 }
 
-/* ===== FAQ (accordion) ===== */
 function FAQ() {
   const faqs = [
-    { q: "What is APPHO and what does it stand for?",
-      a: "APPHO stands for the Aztec Pre-Professional Health Organization. We are a student-run organization at SDSU dedicated to supporting students pursuing careers in the health professions, including medicine, dentistry, pharmacy, optometry, physician assistant, and more."
-    },
-    { q: "Who can join APPHO?",
-      a: "APPHO is open to all SDSU students interested in health-related careers, regardless of major or year."
-    },
-    { q: "What makes APPHO different from other pre-health clubs on campus?",
-      a: "Our interdisciplinary focus welcomes students across all health professions. We prioritize community, mentorship, professional development, and networking."
-    },
-    { q: "What kind of events does APPHO host?",
-      a: "Guest speaker panels, application workshops, volunteer opportunities, socials, and collaborations with other orgs and departments."
-    },
-    { q: "How does APPHO support students preparing for grad/professional school?",
-      a: "Workshops, Q&As with professionals, peer mentorship, networking, clinical/volunteer connections, and resources for exams and timelines."
-    },
-    { q: "Are there leadership opportunities in APPHO?",
-      a: "Yes—executive board positions, committees, and event roles are available each year."
-    },
-    { q: "What is the time commitment like for members?",
-      a: "Flexible. We typically hold weekly meetings plus optional events. Participate as much as you can."
-    },
-    { q: "Is there a membership fee?",
-      a: "Yes, a small fee supports club activities. Amount and payment details are announced each semester; financial accommodations may be available."
-    },
-    { q: "How can I stay connected with APPHO?",
-      a: "Instagram @appho.sdsu, GroupMe (link below), email list (new member form), GBMs, and this website."
-    },
-    { q: "How do I get started?",
-      a: "1) Fill out the new member form, 2) join our GroupMe, 3) attend a GBM, 4) follow us on Instagram."
-    },
+    { q: "What is APPHO and what does it stand for?", a: "APPHO stands for the Aztec Pre-Professional Health Organization. We are a student-run organization at SDSU dedicated to supporting students pursuing careers in the health professions, including medicine, dentistry, pharmacy, optometry, physician assistant, and more."},
+    { q: "Who can join APPHO?", a: "APPHO is open to all SDSU students interested in health-related careers, regardless of major or year."},
+    { q: "What makes APPHO different from other pre-health clubs on campus?", a: "Our interdisciplinary focus welcomes students across all health professions. We prioritize community, mentorship, professional development, and networking."},
+    { q: "What kind of events does APPHO host?", a: "Guest speaker panels, application workshops, volunteer opportunities, socials, and collaborations with other orgs and departments."},
+    { q: "How does APPHO support students preparing for grad/professional school?", a: "Workshops, Q&As with professionals, peer mentorship, networking, clinical/volunteer connections, and resources for exams and timelines."},
+    { q: "Are there leadership opportunities in APPHO?", a: "Yes—executive board positions, committees, and event roles are available each year."},
+    { q: "What is the time commitment like for members?", a: "Flexible. We typically hold weekly meetings plus optional events. Participate as much as you can."},
+    { q: "Is there a membership fee?", a: "Yes, a small fee supports club activities. Amount and payment details are announced each semester; financial accommodations may be available."},
+    { q: "How can I stay connected with APPHO?", a: "Instagram @appho.sdsu, GroupMe (link below), email list (new member form), GBMs, and this website."},
+    { q: "How do I get started?", a: "1) Fill out the new member form, 2) join our GroupMe, 3) attend a GBM, 4) follow us on Instagram."},
   ];
+
+  const [open, setOpen] = useState(faqs.map(() => false));
+  const setAll = (value) => setOpen(open.map(() => value));
+  const toggleAt = (idx, next) => {
+    const copy = [...open];
+    copy[idx] = typeof next === "boolean" ? next : !copy[idx];
+    setOpen(copy);
+  };
 
   return (
     <section className="py-12">
       <Container>
-        <h2 className="font-display text-3xl section-title">FAQ</h2>
-        <div className="mt-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="font-display text-3xl section-title">FAQ</h2>
+          <div className="flex flex-wrap gap-2">
+            <button onClick={() => setAll(true)} className="btn-pill btn-outline-red">Expand All</button>
+            <button onClick={() => setAll(false)} className="btn-pill btn-outline-red">Collapse All</button>
+          </div>
+        </div>
+
+        <div className="mt-6">
           {faqs.map((item, i) => (
-            <details className="faq" key={i}>
+            <details
+              className="faq"
+              key={i}
+              open={open[i]}
+              onToggle={(e) => toggleAt(i, e.currentTarget.open)}
+            >
               <summary>
                 <span>{item.q}</span>
                 <span className="faq-caret">›</span>
@@ -442,7 +495,7 @@ function Membership() {
                 <a
                   key={i}
                   href={x.href}
-                  className="flex items-center justify-between rounded-xl border px-4 py-3 hover:bg-zinc-50 btn"
+                  className="flex items-center justify-between rounded-xl border px-4 py-3 hover:bg-zinc-50"
                 >
                   <span>{x.label}</span>
                 </a>
@@ -562,7 +615,7 @@ function People() {
                   background:
                     p.photo
                       ? undefined
-                      : "linear-gradient(180deg, rgba(166,25,46,.35), rgba(212,23,54,.35))",
+                      : "linear-gradient(180deg, rgba(215,45,66,.15), rgba(246,73,92,.15))",
                 }}
               />
               <div className="mt-3">
@@ -571,7 +624,7 @@ function People() {
                 {p.email && (
                   <a
                     href={`mailto:${p.email}`}
-                    className="mt-2 inline-flex items-center gap-2 rounded-lg border px-3 py-1 text-sm hover:bg-zinc-50 btn"
+                    className="mt-2 inline-flex items-center gap-2 rounded-lg border px-3 py-1 text-sm hover:bg-zinc-50"
                   >
                     <Mail className="h-4 w-4" /> Email
                   </a>
@@ -587,7 +640,7 @@ function People() {
 
 function Events() {
   const [pwd, setPwd] = useState("");
-  const [unlocked, setUnlocked] = useState(!site.events.protected); // if not protected, show immediately
+  const [unlocked, setUnlocked] = useState(!site.events.protected);
   const [error, setError] = useState("");
 
   const handleUnlock = (e) => {
@@ -636,12 +689,7 @@ function Events() {
                 className="mt-2 w-full rounded-lg border border-zinc-300 px-3 py-2"
               />
               {error && <div className="mt-2 text-sm text-red-600">{error}</div>}
-              <button
-                type="submit"
-                className="mt-4 rounded-xl bg-appho-red px-4 py-2 text-white btn"
-              >
-                Unlock
-              </button>
+              <button type="submit" className="mt-4 btn-pill btn-solid-red">Unlock</button>
             </div>
           </form>
         ) : (
@@ -651,10 +699,7 @@ function Events() {
         )}
 
         {unlocked && site.events.addCalendarLink && (
-          <a
-            href={site.events.addCalendarLink}
-            className="mt-4 inline-flex items-center gap-2 rounded-xl border px-4 py-2 hover:bg-zinc-50 btn"
-          >
+          <a href={site.events.addCalendarLink} className="mt-4 inline-flex items-center gap-2 btn-pill btn-outline-red">
             <Calendar className="h-4 w-4" /> {site.events.addCalendarText}
           </a>
         )}
@@ -673,9 +718,7 @@ function Contact() {
             <div className="mt-3 space-y-3 text-sm text-zinc-700">
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4" />
-                <a href={`mailto:${site.contact.email}`}>
-                  {site.contact.email}
-                </a>
+                <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
               </div>
               <div className="flex items-center gap-2">
                 <Instagram className="h-4 w-4" />
@@ -685,14 +728,14 @@ function Contact() {
                 <Globe className="h-4 w-4" /> {site.contact.address}
               </div>
             </div>
-            <a href={site.contact.formTo} className="mt-4 inline-block rounded-xl border px-4 py-2 hover:bg-zinc-50 btn">
+            <a href={site.contact.formTo} className="mt-4 inline-block btn-pill btn-outline-red">
               Email us
             </a>
           </Card>
           <Card>
             <h3 className="text-xl font-medium">Questions about membership?</h3>
             <p className="mt-2 text-zinc-600">We will get back to you within a few days during the semester.</p>
-            <a href={site.hero.ctaLink} className="mt-4 inline-block rounded-xl border px-4 py-2 hover:bg-zinc-50 btn">
+            <a href={site.hero.ctaLink} className="mt-4 inline-block btn-pill btn-ghost">
               Join form
             </a>
           </Card>
@@ -704,15 +747,15 @@ function Contact() {
 
 function Footer() {
   return (
-    <footer className="border-t border-zinc-800 bg-black text-white py-8">
+<footer className="border-t border-zinc-200 bg-white text-zinc-800 py-8">
       <Container>
         <div className="grid gap-6 md:grid-cols-3">
           <div>
             <div className="text-lg font-display">{site.name}</div>
-            <div className="text-zinc-300">{site.tagline}</div>
+            <div className="text-zinc-600">{site.tagline}</div>
             <div className="text-zinc-500 text-xs mt-1">{site.year}</div>
           </div>
-          <div className="text-sm text-zinc-300">
+          <div className="text-sm text-zinc-700">
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4" />
               <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
@@ -725,7 +768,7 @@ function Footer() {
               <Globe className="h-4 w-4" /> {site.contact.address}
             </div>
           </div>
-          <div className="text-sm text-zinc-400">
+          <div className="text-sm text-zinc-500">
             <div>© {new Date().getFullYear()} APPHO. All rights reserved.</div>
           </div>
         </div>
@@ -734,37 +777,38 @@ function Footer() {
   );
 }
 
-export default function ApphoSite() {
-  const [current, setCurrent] = useState("home");
+export default function ApphoSite(){
+  const [current,setCurrent]=useState("home");
 
-  const Page = useMemo(() => {
-    switch (current) {
-      case "membership":
-        return <Membership />;
-      case "speakers":
-        return <Speakers />;
-      case "people":
-        return <People />;
-      case "events":
-        return <Events />;
-      case "contact":
-        return <Contact />;
-      default:
-        return (
-          <>
-            <Hero />
-            <HomeAbout />
-            <FAQ />
-            <Photos />
-          </>
-        );
+  // Tiny hash router: #events, #membership, #people, #speakers, #contact, #home
+useEffect(() => {
+  const handle = () => {
+    const raw = window.location.hash || "#home";
+    const h = raw.startsWith("#") ? raw.slice(1) : raw; // "home", "events", etc.
+    const allowed = new Set(["home", ...site.nav.map(n => n.key)]);
+    setCurrent(allowed.has(h) ? h : "home");
+  };
+  handle(); // on initial load
+  window.addEventListener("hashchange", handle);
+  return () => window.removeEventListener("hashchange", handle);
+}, []);
+
+
+  const Page = useMemo(()=>{
+    switch(current){
+      case "membership": return <Membership />;
+      case "speakers":   return <Speakers />;
+      case "people":     return <People />;
+      case "events":     return <Events />;
+      case "contact":    return <Contact />;
+      default:           return (<><Hero /><HomeAbout /><FAQ /><Photos /></>);
     }
-  }, [current]);
+  },[current]);
 
   return (
     <div className="min-h-screen bg-zinc-50 text-zinc-900 flex flex-col">
       <HeadStyle />
-      <Nav current={current} setCurrent={setCurrent} />
+      <Nav current={current} />
       <main className="flex-1">{Page}</main>
       <Footer />
     </div>
