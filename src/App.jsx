@@ -2,7 +2,7 @@
 // Edit only the `site` object below to update copy, colors, images, officers, speakers, links, and passwords.
 
 import { useMemo, useState, useEffect } from "react";
-import { Calendar, Users, Mail, Instagram, Globe, Shield } from "lucide-react";
+import { Calendar, Linkedin, Users, Mail, Instagram, Globe, Shield } from "lucide-react";
 
 // Inject Google Fonts + brand tokens + site-wide styles
 function HeadStyle() {
@@ -15,15 +15,24 @@ function HeadStyle() {
         rel="stylesheet"
       />
       <style>{`
-/* ===== People card 3D flip ===== */
-.card-3d{ perspective:1000px; }
+/* ===== People card 3D flip (fixed height) ===== */
+.card-3d{
+  perspective:1000px;
+  position:relative;
+  width:100%;
+  aspect-ratio: 4 / 5;          /* <— sets a real height */
+}
 .card-3d-inner{
-  position:relative; transform-style:preserve-3d; transition: transform .6s ease;
+  position:relative;
+  width:100%; height:100%;      /* <— fill the container */
+  transform-style:preserve-3d; transition: transform .6s ease;
   border-radius:12px; overflow:hidden;
 }
 .card-3d:hover .card-3d-inner{ transform: rotateY(180deg); }
+.card-3d.forceflip .card-3d-inner{ transform: rotateY(180deg); } /* mobile tap */
 .card-face{
   position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+  width:100%; height:100%;
 }
 .card-front{ background:#f8fafc; }
 .card-back{
@@ -31,6 +40,28 @@ function HeadStyle() {
   color:#fff; transform: rotateY(180deg);
   display:flex; align-items:center; justify-content:center; padding:16px; text-align:left;
 }
+
+.person-name{ font-weight:700; font-size:14px; }
+.person-role{ font-size:12px; opacity:.9; }
+
+/* LinkedIn floating button (front) */
+.person-ln{ position:absolute; right:8px; top:8px; }
+
+/* back text layout – compact */
+.bio-back-wrap{
+  padding:14px; display:flex; flex-direction:column; gap:6px;
+  font-size:12px; line-height:1.3;
+}
+.bio-label{ font-size:11px; text-transform:uppercase; letter-spacing:.04em; opacity:.9; }
+.bio-val{ opacity:.96; }
+.bio-fav{ margin-top:2px; }
+
+/* line clamp utilities to keep text inside the photo */
+.clamp-1{ display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }
+.clamp-2{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.clamp-3{ display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+.clamp-4{ display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
+
 
 /* ===== Get started layout helpers ===== */
 .stack-card{ display:flex; flex-direction:column; }
@@ -197,16 +228,24 @@ const site = {
       { name: "Priya Shah, PharmD", role: "Clinical Pharmacist", topic: "Hospital Pharmacy 101", date: "Mar 6, 2025", link: "#" },
     ],
   },
-  people: {
-    intro: "Meet the leadership team",
-    officers: [
-      { name: "Avi", role: "President", photo: "", email: "avery@apphosdsu.com" },
-      { name: "avi", role: "VP, Programs", photo: "", email: "sam@apphosdsu.com" },
-      { name: "avi", role: "Treasurer", photo: "" },
-      { name: "avi", role: "Outreach Lead", photo: "", email: "leo@apphosdsu.com" },
-    ],
-    advisors: [],
-  },
+people: {
+  intro: "Meet the leadership team",
+  officers: [
+    { name: "Penelope Dalton",  role: "President",                             photo: "" },
+    { name: "Paul DeStefano",   role: "Vice President",                        photo: "" },
+    { name: "Celine Thomassian",role: "VP of Membership and Development",      photo: "" },
+    { name: "Jeremy Goodwin",   role: "Secretary",                             photo: "" },
+    { name: "Rubi Kincannon",   role: "Treasurer",                             photo: "" },
+    { name: "Claire Westberg",  role: "Professional Development",              photo: "" },
+    { name: "Marco Crosswhite", role: "Philanthropy",                          photo: "" },
+    { name: "Anna Sklyar",      role: "Academics",                             photo: "" },
+    { name: "Sarah Valenzuela", role: "Social",                                photo: "" },
+    { name: "Josh Brennan",     role: "Community Service",                     photo: "" },
+    { name: "Madasin Farrow",   role: "Public Relations",                      photo: "" },
+  ],
+  advisors: [],
+},
+
   events: {
     intro: "Members-only calendar.",
     calendarSrc: "https://calendar.google.com/calendar/embed?src=c_classroom12345%40group.calendar.google.com&ctz=America%2FLos_Angeles",
@@ -227,7 +266,7 @@ const site = {
     sheetLink: "",
   },
   members: {
-    calendarPassword: "appho2024",
+    calendarPassword: "APPHO25",
     calendarLink:
       "https://calendar.google.com/calendar/u/0?cid=ODNkNWUzMzZkMjI2NWMzNjAwMzFhOWMzNWU5YmY2NjU4Njk2NmY4MzBmZWE2MTY1MzhlYjc3MDUzZGU5ODE4N0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t",
   },
@@ -518,7 +557,7 @@ function AdminInline() {
     <Card>
       <div className="flex items-center gap-2">
         <Shield className="h-5 w-5" />
-        <h3 className="font-display text-2xl">Officer / Admin</h3>
+        <h3 className="font-display text-2xl">Officer / Members</h3>
       </div>
       {!ok ? (
         <div className="mt-4">
@@ -599,38 +638,117 @@ function SpeakerCard({ name, role, topic, date, link, tag }) {
 }
 
 function People() {
+  // helper: turn major/year fields into a single string nicely
+  const majorYearText = (p) => {
+    if (p.majorYear) return p.majorYear;
+    const parts = [p.major, p.year].filter(Boolean);
+    return parts.join(" · ");
+  };
+
+  const PersonCard = ({ p }) => {
+    const [flip, setFlip] = useState(false);
+
+    return (
+      <Card>
+        {/* 3D flip container */}
+<div
+  className={`card-3d ${flip ? "forceflip" : ""}`}
+  onClick={() => setFlip((v) => !v)}
+  style={{ cursor: "pointer", aspectRatio: "4 / 5" }}   // <— added
+  title="Click/tap to flip"
+>
+
+          <div className="card-3d-inner">
+            {/* FRONT */}
+            <div className="card-face card-front">
+              <div
+                className="aspect-[4/5] w-full bg-cover bg-center relative"
+                style={{
+                  backgroundImage: p.photo ? `url(${p.photo})` : undefined,
+                  background: p.photo
+                    ? undefined
+                    : "linear-gradient(180deg, rgba(215,45,66,.15), rgba(246,73,92,.15))",
+                }}
+              >
+                {/* LinkedIn button (if provided) */}
+                {p.linkedin && (
+                  <a
+                    href={p.linkedin}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="person-ln btn-linkedin"
+                    onClick={(e) => e.stopPropagation()}
+                    title="LinkedIn"
+                  >
+                    <Linkedin className="h-5 w-5" />
+                  </a>
+                )}
+
+                {/* name/role overlay */}
+                <div className="person-overlay">
+                  <div className="person-name clamp-1">{p.name}</div>
+                  <div className="person-role clamp-2">{p.role}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* BACK */}
+            <div className="card-face card-back">
+              <div className="bio-back-wrap">
+                <div>
+                  <div className="bio-label">Hometown</div>
+                  <div className="bio-val clamp-1">{p.hometown || "—"}</div>
+                </div>
+                <div>
+                  <div className="bio-label">Major / Year</div>
+                  <div className="bio-val clamp-2">{majorYearText(p) || "—"}</div>
+                </div>
+                <div>
+                  <div className="bio-label">Favorite thing about APPHO</div>
+                  <div className="bio-val bio-fav clamp-4">{p.favorite || "—"}</div>
+                </div>
+
+                {/* contact row */}
+                <div className="mt-2 flex items-center gap-2">
+                  {p.email && (
+                    <a
+                      href={`mailto:${p.email}`}
+                      className="inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs hover:bg-white/10"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Mail className="h-3 w-3" /> Email
+                    </a>
+                  )}
+                  {p.linkedin && (
+                    <a
+                      href={p.linkedin}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs hover:bg-white/10"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Linkedin className="h-3 w-3" /> LinkedIn
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Card>
+    );
+  };
+
   return (
     <section className="py-12">
       <Container>
         <h2 className="font-display text-3xl section-title">Exec. Board</h2>
         <p className="mt-2 text-zinc-600">{site.people.intro}</p>
-        <h3 className="mt-6 font-semibold flex items-center gap-2"><Users className="h-4 w-4" /> Executive Board</h3>
-        <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+        {/* One uniform responsive grid (same sizes as before) */}
+        <div className="mt-6 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {site.people.officers.map((p, i) => (
-            <Card key={i}>
-              <div
-                className="aspect-[4/5] w-full rounded-xl bg-cover bg-center"
-                style={{
-                  backgroundImage: p.photo ? `url(${p.photo})` : undefined,
-                  background:
-                    p.photo
-                      ? undefined
-                      : "linear-gradient(180deg, rgba(215,45,66,.15), rgba(246,73,92,.15))",
-                }}
-              />
-              <div className="mt-3">
-                <div className="font-semibold">{p.name}</div>
-                <div className="text-sm text-zinc-600">{p.role}</div>
-                {p.email && (
-                  <a
-                    href={`mailto:${p.email}`}
-                    className="mt-2 inline-flex items-center gap-2 rounded-lg border px-3 py-1 text-sm hover:bg-zinc-50"
-                  >
-                    <Mail className="h-4 w-4" /> Email
-                  </a>
-                )}
-              </div>
-            </Card>
+            <PersonCard key={p.name + i} p={p} />
           ))}
         </div>
       </Container>
