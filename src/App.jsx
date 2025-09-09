@@ -1,5 +1,6 @@
 // APPHO @ SDSU — single file React site
 // Edit only the `site` object below to update copy, colors, images, officers, speakers, links, and passwords.
+// Hello I am Avi i made this acw2515@gmail.com email if you have questions
 
 import { useMemo, useState, useEffect } from "react";
 import { Calendar, Linkedin, Users, Mail, Instagram, Globe, Shield } from "lucide-react";
@@ -15,24 +16,43 @@ function HeadStyle() {
         rel="stylesheet"
       />
       <style>{`
+/* ===== Site-wide red gradient + dotted pattern (persists to footer) ===== */
+.pattern-bg{ position:relative; }
+.pattern-bg::before{
+  content:"";
+  position:fixed; inset:0;
+  z-index:-1;
+  pointer-events:none;
+
+  /* Dots only — no gradient */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><circle cx='1' cy='1' r='1' fill='%23D41736' fill-opacity='0.30'/></svg>");
+  background-repeat: repeat;
+  background-size: 32px 32px;
+  background-attachment: fixed;
+}
+
 /* ===== People card 3D flip (fixed height) ===== */
 .card-3d{
   perspective:1000px;
   position:relative;
   width:100%;
-  aspect-ratio: 4 / 5;          /* <— sets a real height */
+  aspect-ratio: 4 / 5;
 }
 .card-3d-inner{
   position:relative;
-  width:100%; height:100%;      /* <— fill the container */
-  transform-style:preserve-3d; transition: transform .6s ease;
-  border-radius:12px; overflow:hidden;
-}
-.card-3d:hover .card-3d-inner{ transform: rotateY(180deg); }
-.card-3d.forceflip .card-3d-inner{ transform: rotateY(180deg); } /* mobile tap */
-.card-face{
-  position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
   width:100%; height:100%;
+  transform-style:preserve-3d; -webkit-transform-style:preserve-3d;
+  transform:rotateY(0deg);
+  transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
+  border-radius:12px; overflow:hidden;
+  will-change: transform;
+}
+.card-3d:hover .card-3d-inner,
+.card-3d.forceflip .card-3d-inner{ transform: rotateY(180deg); }
+
+.card-face{
+  position:absolute; inset:0; width:100%; height:100%;
+  backface-visibility:hidden; -webkit-backface-visibility:hidden;
 }
 .card-front{ background:#f8fafc; }
 .card-back{
@@ -41,11 +61,25 @@ function HeadStyle() {
   display:flex; align-items:center; justify-content:center; padding:16px; text-align:left;
 }
 
+/* Front overlay for name/role (ensures text readable on any photo) */
+.person-overlay{
+  position:absolute; left:0; right:0; bottom:0;
+  padding:10px 12px;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.55) 85%);
+  color:#fff;
+}
 .person-name{ font-weight:700; font-size:14px; }
-.person-role{ font-size:12px; opacity:.9; }
+.person-role{ font-size:12px; opacity:.95; }
 
 /* LinkedIn floating button (front) */
-.person-ln{ position:absolute; right:8px; top:8px; }
+.person-ln{
+  position:absolute; right:8px; top:8px;
+  display:inline-flex; align-items:center; justify-content:center;
+  width:44px; height:44px; border-radius:9999px;
+  border:1px solid #e5e7eb; background:#fff;
+  transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.person-ln:hover{ transform: translateY(-1px); box-shadow:0 8px 24px rgba(0,0,0,.08); border-color: var(--appho-dark-red); }
 
 /* back text layout – compact */
 .bio-back-wrap{
@@ -62,23 +96,20 @@ function HeadStyle() {
 .clamp-3{ display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
 .clamp-4{ display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
 
-
 /* ===== Get started layout helpers ===== */
 .stack-card{ display:flex; flex-direction:column; }
 .stack-fill{ display:flex; flex-direction:column; gap:16px; flex:1; }
 .stack-fill .btn-pill{ flex:1; min-height:64px; width:100%; } /* tall, full width */
 
 /* keep the outer "Card" hover outline you already use */
-.card-hover-red:hover{ border-color: var(--appho-dark-red) !important; }
-
-/* LinkedIn icon button */
-.btn-linkedin{
-  display:inline-flex; align-items:center; justify-content:center;
-  width:44px; height:44px; border-radius:9999px;
-  border:1px solid #e5e7eb; background:#fff; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+.card-hover-red{ transition: box-shadow .2s ease, border-color .2s ease, transform .2s ease; }
+.card-hover-red:hover{
+  border-color: var(--appho-dark-red) !important;
+  box-shadow: 0 6px 22px rgba(166,25,46,.18);
+  transform: translateY(-1px);
 }
-.btn-linkedin:hover{ transform: translateY(-1px); box-shadow:0 8px 24px rgba(0,0,0,.08); border-color: var(--appho-dark-red); }
 
+/* brand tokens */
 :root{
   --appho-bright-red:#D41736; /* Bright Red */
   --appho-dark-red:#A6192E;   /* Dark Red */
@@ -100,57 +131,30 @@ function HeadStyle() {
 .text-appho-red{color:var(--appho-bright-red);}
 .border-appho-charcoal{border-color:var(--appho-charcoal);}
 
-/* pretty pill buttons (SDSU red base + light-up hover) */
+/* Buttons (unified) */
 .btn-pill{
   display:inline-flex; align-items:center; justify-content:center; gap:8px;
   border-radius:9999px; padding:12px 18px; font-weight:700; letter-spacing:.01em;
-  border:1px solid transparent; text-decoration:none !important;
-  transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease, filter .15s ease, color .15s ease;
+  border:1px solid var(--appho-dark-red);
+  background:#fff; color:#111; text-decoration:none !important;
+  transition: background .2s ease, color .2s ease, border-color .2s ease, transform .15s ease, box-shadow .15s ease;
+  text-align:center;
+}
+.btn-pill:hover,
+.btn-pill:focus-visible{
+  background: var(--appho-bright-red);
+  color:#fff;
+  border-color: var(--appho-bright-red);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(166,25,46,.25);
 }
 .btn-pill:active{ transform:translateY(0); }
-
-/* PRIMARY — solid SDSU red by default; lights up to brighter red on hover/focus */
-.btn-solid-red{
-  background: var(--appho-dark-red);  /* #A6192E */
-  color:#fff;
-  box-shadow: 0 10px 22px rgba(166,25,46,.28);
-}
-.btn-solid-red:hover,
-.btn-solid-red:focus-visible{
-  background: var(--appho-bright-red); /* #D41736 */
-  color:#fff;
-  box-shadow: 0 0 0 4px rgba(166,25,46,.18), 0 14px 28px rgba(166,25,46,.34);
-  transform: translateY(-1px);
-}
-
-/* SECONDARY / TERTIARY */
-.btn-outline-red{ background:#fff; color:#111; border-color:rgba(166,25,46,.35); }
-.btn-outline-red:hover,
-.btn-outline-red:focus-visible{ border-color:var(--appho-dark-red); box-shadow:0 8px 20px rgba(166,25,46,.12); }
-
-.btn-ghost{ background:var(--red-surface); color:#111; border-color:#ffd7dc; }
-.btn-ghost:hover,
-.btn-ghost:focus-visible{ background:var(--red-surface-2); border-color:var(--appho-dark-red); }
-
-/* Make the three "Get started" buttons fill the whole card vertically */
-.stack-fill .btn-pill{ width:100%; min-height:64px; }
-
-/* keep link hover color from fighting button text inside buttons */
-.btn-pill:hover{ color:inherit; }
 
 /* section title accent (thin red bar on the left) */
 .section-title{ position: relative; padding-left: 14px; }
 .section-title::before{
   content:""; position:absolute; left:0; top:4px; bottom:4px; width:4px; border-radius:4px;
   background: linear-gradient(180deg, var(--appho-dark-red), var(--appho-bright-red));
-}
-
-/* card hover outline (used on Exec Board + Events + generic cards) */
-.card-hover-red{ transition: box-shadow .2s ease, border-color .2s ease, transform .2s ease; }
-.card-hover-red:hover{
-  border-color: var(--appho-dark-red) !important;
-  box-shadow: 0 6px 22px rgba(166,25,46,.18);
-  transform: translateY(-1px);
 }
 
 /* simple accordion styling (FAQ) */
@@ -170,6 +174,7 @@ details[open] .faq-caret{ transform: rotate(90deg); }
     </>
   );
 }
+
 /* ==========================
    CONTENT — EDIT ME ONLY
 ========================== */
@@ -216,7 +221,6 @@ const site = {
     howToJoin: [
       { label: "Apply on Google Form", href: "https://forms.gle/ofxQJF1izqCcK8dK6" },
       { label: "Join our GroupMe", href: "https://groupme.com/join_group/88026538/Srd3FVX5" },
-      { label: "Get the newsletter", href: "https://apphosdsu.com/newsletter" },
     ],
     dues: { show: true, text: "Annual dues: $30. Scholarships available. Pay on September 17th." },
   },
@@ -228,23 +232,23 @@ const site = {
       { name: "Priya Shah, PharmD", role: "Clinical Pharmacist", topic: "Hospital Pharmacy 101", date: "Mar 6, 2025", link: "#" },
     ],
   },
-people: {
-  intro: "Meet the leadership team",
-  officers: [
-    { name: "Penelope Dalton",  role: "President",                             photo: "" },
-    { name: "Paul DeStefano",   role: "Vice President",                        photo: "" },
-    { name: "Celine Thomassian",role: "VP of Membership and Development",      photo: "" },
-    { name: "Jeremy Goodwin",   role: "Secretary",                             photo: "" },
-    { name: "Rubi Kincannon",   role: "Treasurer",                             photo: "" },
-    { name: "Claire Westberg",  role: "Professional Development",              photo: "" },
-    { name: "Marco Crosswhite", role: "Philanthropy",                          photo: "" },
-    { name: "Anna Sklyar",      role: "Academics",                             photo: "" },
-    { name: "Sarah Valenzuela", role: "Social",                                photo: "" },
-    { name: "Josh Brennan",     role: "Community Service",                     photo: "" },
-    { name: "Madasin Farrow",   role: "Public Relations",                      photo: "" },
-  ],
-  advisors: [],
-},
+  people: {
+    intro: "Meet the leadership team",
+    officers: [
+      { name: "Penelope Dalton",  role: "President",                             photo: "" },
+      { name: "Paul DeStefano",   role: "Vice President",                        photo: "" },
+      { name: "Celine Thomassian",role: "VP of Membership and Development",      photo: "" },
+      { name: "Jeremy Goodwin",   role: "Secretary",                             photo: "" },
+      { name: "Rubi Kincannon",   role: "Treasurer",                             photo: "" },
+      { name: "Claire Westberg",  role: "Professional Development",              photo: "" },
+      { name: "Marco Crosswhite", role: "Philanthropy",                          photo: "" },
+      { name: "Anna Sklyar",      role: "Academics",                             photo: "" },
+      { name: "Sarah Valenzuela", role: "Social",                                photo: "" },
+      { name: "Josh Brennan",     role: "Community Service",                     photo: "" },
+      { name: "Madasin Farrow",   role: "Public Relations",                      photo: "" },
+    ],
+    advisors: [],
+  },
 
   events: {
     intro: "Members-only calendar.",
@@ -317,7 +321,7 @@ function Nav({ current }) {
           </nav>
           <a
             href={site.hero.ctaLink}
-            className="hidden md:inline-block btn-pill btn-solid-red px-3 py-2 text-sm font-medium"
+            className="hidden md:inline-block btn-pill px-3 py-2 text-sm font-medium"
           >
             {site.hero.ctaText}
           </a>
@@ -348,8 +352,8 @@ function Nav({ current }) {
 function Hero() {
   return (
     <section
-      className="text-white py-16"
-	style={{ background: "var(--appho-bright-red)" }}
+      className="hero-red text-white py-16"
+      style={{ background: "var(--appho-bright-red)" }}
     >
       <Container>
         <div className="grid items-center gap-8 md:grid-cols-2">
@@ -358,10 +362,10 @@ function Hero() {
             <p className="mt-3 text-lg text-zinc-100/90">{site.hero.sub}</p>
             <p className="mt-1 text-sm text-zinc-100/70">{site.year}</p>
             <div className="mt-6 flex items-center gap-3">
-              <a href={site.hero.ctaLink} className="btn-pill btn-solid-red px-4 py-2 font-medium">
+              <a href={site.hero.ctaLink} className="btn-pill px-4 py-2 font-medium">
                 {site.hero.ctaText}
               </a>
-              <a href="#events" className="btn-pill btn-ghost">
+              <a href="#events" className="btn-pill">
                 See events
               </a>
             </div>
@@ -377,6 +381,7 @@ function Hero() {
     </section>
   );
 }
+
 function Card({ children, className = "" }) {
   return (
     <div className={`rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm card-hover-red ${className}`}>
@@ -400,21 +405,22 @@ function HomeAbout() {
             <li>Shadowing and a pre-health speaker series with practicing providers</li>
           </ul>
         </Card>
-{/* Stacked actions that fill the whole card */}
-<Card className="stack-card">
-  <h3 className="text-xl font-medium mb-5">Get started</h3>
-<div className="stack-fill">
-  <a href={site.hero.ctaLink} className="btn-pill btn-solid-red w-full">
-    <Users className="h-4 w-4" /> Membership Form
-  </a>
-  <a href="#events" className="btn-pill btn-outline-red w-full">
-    <Calendar className="h-4 w-4" /> See Events
-  </a>
-  <a href="https://groupme.com/join_group/88026538/Srd3FVX5" className="btn-pill btn-ghost w-full">
-    <Users className="h-4 w-4" /> Join GroupMe
-  </a>
-</div>
-</Card>
+
+        {/* Stacked actions that fill the whole card */}
+        <Card className="stack-card">
+          <h3 className="text-xl font-medium mb-5 text-center">Get started</h3>
+          <div className="stack-fill">
+            <a href={site.hero.ctaLink} className="btn-pill w-full">
+              <Users className="h-4 w-4" /> Membership Form
+            </a>
+            <a href="https://groupme.com/join_group/88026538/Srd3FVX5" className="btn-pill w-full">
+              <Users className="h-4 w-4" /> Join GroupMe
+            </a>
+            <a href="#events" className="btn-pill w-full">
+              <Calendar className="h-4 w-4" /> See Events
+            </a>
+          </div>
+        </Card>
       </div>
     </section>
   );
@@ -448,8 +454,8 @@ function FAQ() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-display text-3xl section-title">FAQ</h2>
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => setAll(true)} className="btn-pill btn-outline-red">Expand All</button>
-            <button onClick={() => setAll(false)} className="btn-pill btn-outline-red">Collapse All</button>
+            <button onClick={() => setAll(true)} className="btn-pill">Expand All</button>
+            <button onClick={() => setAll(false)} className="btn-pill">Collapse All</button>
           </div>
         </div>
 
@@ -527,18 +533,19 @@ function Membership() {
               </p>
             )}
           </Card>
-          <Card>
-            <h3 className="text-xl font-medium">Join the club</h3>
-            <div className="mt-3 grid gap-3">
-              {site.membership.howToJoin.map((x, i) => (
-                <a
-                  key={i}
-                  href={x.href}
-                  className="flex items-center justify-between rounded-xl border px-4 py-3 hover:bg-zinc-50"
-                >
-                  <span>{x.label}</span>
-                </a>
-              ))}
+
+          <Card className="stack-card">
+            <h3 className="text-3xl font-display text-center">Join the club</h3>
+            <div className="stack-fill">
+              <a href={site.hero.ctaLink} className="btn-pill w-full">
+                <Users className="h-4 w-4" /> Apply on Google Form
+              </a>
+              <a href="https://groupme.com/join_group/88026538/Srd3FVX5" className="btn-pill w-full">
+                <Users className="h-4 w-4" /> Join GroupMe
+              </a>
+              <a href={site.contact.instagram} className="btn-pill w-full">
+                <Instagram className="h-4 w-4" /> Follow us on Instagram
+              </a>
             </div>
           </Card>
         </div>
@@ -594,14 +601,14 @@ function AdminInline() {
             className="mt-3 w-full rounded-lg border px-3 py-2"
           />
           {error && <div className="mt-2 text-sm text-red-600">{error}</div>}
-          <button type="submit" className="mt-3 btn-pill btn-solid-red">
+          <button type="submit" className="mt-3 btn-pill">
             Unlock
           </button>
         </form>
       ) : (
         <div className="mt-4">
           {site.admin.sheetLink ? (
-            <a href={site.admin.sheetLink} target="_blank" rel="noreferrer" className="btn-pill btn-outline-red">
+            <a href={site.admin.sheetLink} target="_blank" rel="noreferrer" className="btn-pill">
               Open admin spreadsheet
             </a>
           ) : (
@@ -614,7 +621,6 @@ function AdminInline() {
     </Card>
   );
 }
-
 
 function Speakers() {
   const hasUpcoming = site.speakers.upcoming && site.speakers.upcoming.length > 0;
@@ -680,13 +686,12 @@ function People() {
     return (
       <Card>
         {/* 3D flip container */}
-<div
-  className={`card-3d ${flip ? "forceflip" : ""}`}
-  onClick={() => setFlip((v) => !v)}
-  style={{ cursor: "pointer", aspectRatio: "4 / 5" }}   // <— added
-  title="Click/tap to flip"
->
-
+        <div
+          className={`card-3d ${flip ? "forceflip" : ""}`}
+          onClick={() => setFlip((v) => !v)}
+          style={{ cursor: "pointer", aspectRatio: "4 / 5" }}
+          title="Click/tap to flip"
+        >
           <div className="card-3d-inner">
             {/* FRONT */}
             <div className="card-face card-front">
@@ -705,7 +710,7 @@ function People() {
                     href={p.linkedin}
                     target="_blank"
                     rel="noreferrer"
-                    className="person-ln btn-linkedin"
+                    className="person-ln"
                     onClick={(e) => e.stopPropagation()}
                     title="LinkedIn"
                   >
@@ -774,7 +779,6 @@ function People() {
         <h2 className="font-display text-3xl section-title">Exec. Board</h2>
         <p className="mt-2 text-zinc-600">{site.people.intro}</p>
 
-        {/* One uniform responsive grid (same sizes as before) */}
         <div className="mt-6 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {site.people.officers.map((p, i) => (
             <PersonCard key={p.name + i} p={p} />
@@ -836,7 +840,7 @@ function Events() {
                 className="mt-2 w-full rounded-lg border border-zinc-300 px-3 py-2"
               />
               {error && <div className="mt-2 text-sm text-red-600">{error}</div>}
-              <button type="submit" className="mt-4 btn-pill btn-solid-red">Unlock</button>
+              <button type="submit" className="mt-4 btn-pill">Unlock</button>
             </div>
           </form>
         ) : (
@@ -846,7 +850,7 @@ function Events() {
         )}
 
         {unlocked && site.events.addCalendarLink && (
-          <a href={site.events.addCalendarLink} className="mt-4 inline-flex items-center gap-2 btn-pill btn-outline-red">
+          <a href={site.events.addCalendarLink} className="mt-4 inline-flex items-center gap-2 btn-pill">
             <Calendar className="h-4 w-4" /> {site.events.addCalendarText}
           </a>
         )}
@@ -875,14 +879,14 @@ function Contact() {
                 <Globe className="h-4 w-4" /> {site.contact.address}
               </div>
             </div>
-            <a href={site.contact.formTo} className="mt-4 inline-block btn-pill btn-outline-red">
+            <a href={site.contact.formTo} className="mt-4 inline-block btn-pill">
               Email us
             </a>
           </Card>
           <Card>
             <h3 className="text-xl font-medium">Questions about membership?</h3>
             <p className="mt-2 text-zinc-600">We will get back to you within a few days during the semester.</p>
-            <a href={site.hero.ctaLink} className="mt-4 inline-block btn-pill btn-ghost">
+            <a href={site.hero.ctaLink} className="mt-4 inline-block btn-pill">
               Join form
             </a>
           </Card>
@@ -894,7 +898,7 @@ function Contact() {
 
 function Footer() {
   return (
-<footer className="border-t border-zinc-200 bg-white text-zinc-800 py-8">
+    <footer className="border-t border-zinc-200 bg-white text-zinc-800 py-8">
       <Container>
         <div className="grid gap-6 md:grid-cols-3">
           <div>
@@ -928,18 +932,17 @@ export default function ApphoSite(){
   const [current,setCurrent]=useState("home");
 
   // Tiny hash router: #events, #membership, #people, #speakers, #contact, #home
-useEffect(() => {
-  const handle = () => {
-    const raw = window.location.hash || "#home";
-    const h = raw.startsWith("#") ? raw.slice(1) : raw; // "home", "events", etc.
-    const allowed = new Set(["home", ...site.nav.map(n => n.key)]);
-    setCurrent(allowed.has(h) ? h : "home");
-  };
-  handle(); // on initial load
-  window.addEventListener("hashchange", handle);
-  return () => window.removeEventListener("hashchange", handle);
-}, []);
-
+  useEffect(() => {
+    const handle = () => {
+      const raw = window.location.hash || "#home";
+      const h = raw.startsWith("#") ? raw.slice(1) : raw;
+      const allowed = new Set(["home", ...site.nav.map(n => n.key)]);
+      setCurrent(allowed.has(h) ? h : "home");
+    };
+    handle(); // on initial load
+    window.addEventListener("hashchange", handle);
+    return () => window.removeEventListener("hashchange", handle);
+  }, []);
 
   const Page = useMemo(()=>{
     switch(current){
@@ -953,7 +956,7 @@ useEffect(() => {
   },[current]);
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900 flex flex-col">
+    <div className="pattern-bg min-h-screen text-zinc-900 flex flex-col">
       <HeadStyle />
       <Nav current={current} />
       <main className="flex-1">{Page}</main>
