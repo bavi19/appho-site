@@ -61,6 +61,39 @@ function HeadStyle() {
   display:flex; align-items:center; justify-content:center; padding:16px; text-align:left;
 }
 
+/* --- FAQ smooth open/close --- */
+details.faq .faq-content{
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    max-height .45s cubic-bezier(.4,.2,.2,1),
+    opacity .35s ease,
+    transform .45s cubic-bezier(.4,.2,.2,1);
+  will-change: max-height, opacity, transform;
+}
+
+/* When open, reveal content */
+details.faq[open] .faq-content{
+  max-height: 640px;    /* large enough for most answers */
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* caret rotates smoothly */
+.faq-caret{
+  display:inline-block;
+  transition: transform .3s ease;
+  transform-origin: center;
+}
+details[open] .faq-caret{ transform: rotate(90deg); }
+
+/* summary hit area a bit comfier */
+details.faq summary{
+  padding: 6px 0;
+}
+
 /* Front overlay for name/role (ensures text readable on any photo) */
 .person-overlay{
   position:absolute; left:0; right:0; bottom:0;
@@ -441,6 +474,8 @@ function FAQ() {
   ];
 
   const [open, setOpen] = useState(faqs.map(() => false));
+  const allOpen = open.every(Boolean);
+
   const setAll = (value) => setOpen(open.map(() => value));
   const toggleAt = (idx, next) => {
     const copy = [...open];
@@ -453,10 +488,16 @@ function FAQ() {
       <Container>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-display text-3xl section-title">FAQ</h2>
-          <div className="flex flex-wrap gap-2">
-            <button onClick={() => setAll(true)} className="btn-pill">Expand All</button>
-            <button onClick={() => setAll(false)} className="btn-pill">Collapse All</button>
-          </div>
+
+          {/* single smart toggle */}
+          <button
+            onClick={() => setAll(!allOpen)}
+            className="btn-pill"
+            aria-pressed={allOpen}
+            title={allOpen ? "Collapse all answers" : "Expand all answers"}
+          >
+            {allOpen ? "Collapse all" : "Expand all"}
+          </button>
         </div>
 
         <div className="mt-6">
@@ -471,7 +512,11 @@ function FAQ() {
                 <span>{item.q}</span>
                 <span className="faq-caret">›</span>
               </summary>
-              <div className="mt-2 text-zinc-700">{item.a}</div>
+
+              {/* animated body */}
+              <div className="faq-content mt-2 text-zinc-700">
+                {item.a}
+              </div>
             </details>
           ))}
         </div>
