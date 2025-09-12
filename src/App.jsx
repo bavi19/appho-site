@@ -215,11 +215,12 @@ const site = {
   name: "APPHO @ SDSU",
   year: "2025–26",
   tagline: "Building Passionate Healthcare Providers",
-  brand: {
-    logoUrl: "/img/appho-logo.png",
-    primaryColor: "bg-appho-red",
-    headerColor: "bg-appho-black",
-  },
+brand: {
+  headerLogo: "/img/Header-logo.png",   
+  heroLogo: "/img/Appho-t.png",         
+  primaryColor: "bg-appho-red",
+  headerColor: "bg-appho-black",
+},
   nav: [
     { key: "membership", label: "Membership" },
     { key: "speakers", label: "Speakers" },
@@ -319,21 +320,20 @@ function Container({ children }) {
 function Logo() {
   return (
     <div
-      className="flex items-center gap-3 cursor-pointer select-none"
+      className="flex items-center cursor-pointer select-none"
       onClick={() => (window.location.hash = "home")}
       title="APPHO Home"
       aria-label="APPHO Home"
     >
-	<img
- 	 src={site.brand.logoUrl}
-  	alt="APPHO @ SDSU"
- 	 className="mx-auto h-16 sm:h-20 w-auto drop-shadow-sm"
-	/>
-
-      <span className="sr-only">APPHO</span>
+      <img
+        src={site.brand.headerLogo}
+        alt="APPHO header logo"
+        className="h-12 sm:h-14 w-auto object-contain"
+      />
     </div>
   );
 }
+
 
 function Nav({ current }) {
   return (
@@ -387,25 +387,31 @@ function Nav({ current }) {
 
 function Hero() {
   return (
-    <section
-      className="hero-red text-white py-16"
-      style={{ background: "var(--appho-bright-red)" }}
-    >
+    <section className="hero-red text-white py-16" style={{ background: "var(--appho-bright-red)" }}>
       <Container>
         <div className="grid items-center gap-8 md:grid-cols-2">
           <div>
-            <h1 className="font-display text-5xl font-semibold tracking-tight">{site.hero.headline}</h1>
-            <p className="mt-3 text-lg text-zinc-100/90">{site.hero.sub}</p>
+            {/* hidden headline for SEO */}
+		<h1 className="sr-only">{site.hero.headline}</h1>
+
+		{/* big hero logo */}
+		<img
+  		src={site.brand.heroLogo}
+  		alt="APPHO hero logo"
+ 	 	className="h-28 sm:h-36 md:h-44 w-auto drop-shadow-sm"
+		/>
+
+            <p className="mt-4 text-lg text-zinc-100/90">{site.hero.sub}</p>
             <p className="mt-1 text-sm text-zinc-100/70">{site.year}</p>
+
             <div className="mt-6 flex items-center gap-3">
-              <a href={site.hero.ctaLink} className="btn-pill px-4 py-2 font-medium">
+              <a href={site.hero.ctaLink} className="btn-pill btn-solid-red px-4 py-2 font-medium">
                 {site.hero.ctaText}
               </a>
-              <a href="#events" className="btn-pill">
-                See events
-              </a>
+              <a href="#events" className="btn-pill btn-ghost">See events</a>
             </div>
           </div>
+
           <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
             <div
               className="aspect-video w-full rounded-xl bg-cover bg-center"
@@ -417,7 +423,6 @@ function Hero() {
     </section>
   );
 }
-
 function Card({ children, className = "" }) {
   return (
     <div className={`rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm card-hover-red ${className}`}>
@@ -464,7 +469,7 @@ function HomeAbout() {
 
 function FAQ() {
   const faqs = [
-    { q: "What is APPHO and what does it stand for?", a: "APPHO stands for the Aztec Pre-Professional Health Organization. We are a student-run organization at SDSU dedicated to supporting students pursuing careers in the health professions, including medicine, dentistry, pharmacy, optometry, physician assistant, and more."},
+    { q: "What is APPHO and what does it stand for?", a: "APPHO stands for the Aztec Pre-Health Professional Organization. We are a student-run organization at SDSU dedicated to supporting students pursuing careers in the health professions, including medicine, dentistry, pharmacy, optometry, physician assistant, and more."},
     { q: "Who can join APPHO?", a: "APPHO is open to all SDSU students interested in health-related careers, regardless of major or year."},
     { q: "What makes APPHO different from other pre-health clubs on campus?", a: "Our interdisciplinary focus welcomes students across all health professions. We prioritize community, mentorship, professional development, and networking."},
     { q: "What kind of events does APPHO host?", a: "Guest speaker panels, application workshops, volunteer opportunities, socials, and collaborations with other orgs and departments."},
