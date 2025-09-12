@@ -228,13 +228,13 @@ brand: {
     { key: "events", label: "Events" },
     { key: "contact", label: "Contact" },
   ],
-  hero: {
-    headline: "APPHO @ SDSU",
-    sub: "Building Passionate Healthcare Providers",
-    ctaText: "Join now",
-    ctaLink: "https://forms.gle/ofxQJF1izqCcK8dK6",
-    image: "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?q=80&w=1600&auto=format&fit=crop",
-  },
+hero: {
+  headline: "APPHO @ SDSU",
+  sub: "Building Passionate Healthcare Providers",
+  ctaText: "Join now",
+  ctaLink: "https://forms.gle/ofxQJF1izqCcK8dK6",
+  image: "/img/ExecBoard.jpg",   
+},
   about: {
     blurb:
       "APPHO is a mentorship and philanthropic organization that works with students who plan on pursuing a career in the pre-health field. We support paths into medicine, dentistry, pharmacy, optometry, physical therapy, physician assistant, and more.",
@@ -387,37 +387,47 @@ function Nav({ current }) {
 
 function Hero() {
   return (
-    <section className="hero-red text-white py-16" style={{ background: "var(--appho-bright-red)" }}>
+    <section
+      className="hero-red text-white py-20" // ⬅️ more vertical padding
+      style={{ background: "var(--appho-bright-red)" }}
+    >
       <Container>
         <div className="grid items-center gap-8 md:grid-cols-2">
           <div>
             {/* hidden headline for SEO */}
-		<h1 className="sr-only">{site.hero.headline}</h1>
+            <h1 className="sr-only">{site.hero.headline}</h1>
 
-		{/* big hero logo */}
-		<img
-  		src={site.brand.heroLogo}
-  		alt="APPHO hero logo"
- 	 	className="h-28 sm:h-36 md:h-44 w-auto drop-shadow-sm"
-		/>
+            {/* transparent logo */}
+            <img
+              src={site.brand.heroLogo}
+              alt="APPHO hero logo"
+              className="h-28 sm:h-36 md:h-44 w-auto drop-shadow-sm"
+            />
 
             <p className="mt-4 text-lg text-zinc-100/90">{site.hero.sub}</p>
             <p className="mt-1 text-sm text-zinc-100/70">{site.year}</p>
 
             <div className="mt-6 flex items-center gap-3">
-              <a href={site.hero.ctaLink} className="btn-pill btn-solid-red px-4 py-2 font-medium">
+              <a
+                href={site.hero.ctaLink}
+                className="btn-pill btn-solid-red px-4 py-2 font-medium"
+              >
                 {site.hero.ctaText}
               </a>
-              <a href="#events" className="btn-pill btn-ghost">See events</a>
+              <a href="#events" className="btn-pill btn-ghost">
+                See events
+              </a>
             </div>
           </div>
 
-          <div className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-            <div
-              className="aspect-video w-full rounded-xl bg-cover bg-center"
-              style={{ backgroundImage: `url(${site.hero.image})` }}
-            />
-          </div>
+          {/* Taller photo column */}
+          <div className="rounded-2xl overflow-hidden h-72 md:h-80">
+ 	 	<img
+  		  src={site.hero.image}
+    			alt="APPHO Exec Board"
+   		 className="w-full h-full object-cover object-center"
+ 		 />
+		</div>
         </div>
       </Container>
     </section>
