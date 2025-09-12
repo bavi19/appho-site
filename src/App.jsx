@@ -318,16 +318,19 @@ function Container({ children }) {
 
 function Logo() {
   return (
-    <div className="flex items-center gap-3 cursor-pointer select-none" onClick={() => (window.location.hash = "home")}>
-      {site.brand.logoUrl ? (
-        <img
-          src={site.brand.logoUrl}
-          alt="APPHO logo"
-          className="h-9 w-auto object-contain hidden sm:block"
-          onError={(e) => { e.currentTarget.style.display = "none"; }}
-        />
-      ) : null}
-      <div className="text-xl font-display tracking-tight">APPHO</div>
+    <div
+      className="flex items-center gap-3 cursor-pointer select-none"
+      onClick={() => (window.location.hash = "home")}
+      title="APPHO Home"
+      aria-label="APPHO Home"
+    >
+	<img
+ 	 src={site.brand.logoUrl}
+  	alt="APPHO @ SDSU"
+ 	 className="mx-auto h-16 sm:h-20 w-auto drop-shadow-sm"
+	/>
+
+      <span className="sr-only">APPHO</span>
     </div>
   );
 }
