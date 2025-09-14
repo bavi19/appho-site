@@ -266,24 +266,23 @@ hero: {
       { name: "Priya Shah, PharmD", role: "Clinical Pharmacist", topic: "Hospital Pharmacy 101", date: "Mar 6, 2025", link: "#" },
     ],
   },
-  people: {
-    intro: "Meet the leadership team",
-    officers: [
-      { name: "Penelope Dalton",  role: "President",                             photo: "" },
-      { name: "Paul DeStefano",   role: "Vice President",                        photo: "" },
-      { name: "Celine Thomassian",role: "VP of Membership and Development",      photo: "" },
-      { name: "Jeremy Goodwin",   role: "Secretary",                             photo: "" },
-      { name: "Rubi Kincannon",   role: "Treasurer",                             photo: "" },
-      { name: "Claire Westberg",  role: "Professional Development",              photo: "" },
-      { name: "Marco Crosswhite", role: "Philanthropy",                          photo: "" },
-      { name: "Anna Sklyar",      role: "Academics",                             photo: "" },
-      { name: "Sarah Valenzuela", role: "Social",                                photo: "" },
-      { name: "Josh Brennan",     role: "Community Service",                     photo: "" },
-      { name: "Madasin Farrow",   role: "Public Relations",                      photo: "" },
-    ],
-    advisors: [],
-  },
-
+people: {
+  intro: "Meet the Executive Board",
+  officers: [
+    { name: "Penelope Dalton",  role: "President",                photo: "/img/board/penelope.jpeg", linkedin: "", email: "", hometown: "", majorYear: "" },
+    { name: "Paul DeStefano",   role: "Vice President",           photo: "/img/board/paul.jpeg",      linkedin: "", email: "", hometown: "", majorYear: "" },
+    { name: "Celine Thomassian",role: "VP of Membership & Dev.",  photo: "/img/board/celine.jpeg",    linkedin: "", email: "", hometown: "", majorYear: "" },
+    { name: "Marco Crosswhite", role: "Philanthropy",             photo: "/img/board/marco.jpeg",     linkedin: "", email: "", hometown: "", majorYear: "" },
+    { name: "Rubi Kincannon",   role: "Treasurer",                photo: "/img/board/rubi.jpeg",      linkedin: "", email: "", hometown: "", majorYear: "" },
+    { name: "Claire Westberg",  role: "Professional Development", photo: "/img/board/claire.jpeg",    linkedin: "", email: "", hometown: "", majorYear: "" },
+    { name: "Jeremy Goodwin",   role: "Secretary",                photo: "/img/board/jeremy.jpeg",    linkedin: "", email: "", hometown: "", majorYear: "" },
+    { name: "Sarah Valenzuela", role: "Social",                   photo: "/img/board/sarah.jpeg",     linkedin: "", email: "", hometown: "", majorYear: "" },
+    { name: "Anna Sklyar",      role: "Academics",                photo: "/img/board/anna.jpeg",      linkedin: "", email: "", hometown: "", majorYear: "" },
+    { name: "Josh Brennan",     role: "Community Service",        photo: "/img/board/josh.jpeg",      linkedin: "", email: "", hometown: "", majorYear: "" },
+    { name: "Madasin Farrow",   role: "Public Relations",         photo: "/img/board/mads.jpeg",      linkedin: "", email: "", hometown: "", majorYear: "" },
+  ],
+  advisors: [],
+},
   events: {
     intro: "Members-only calendar.",
     calendarSrc: "https://calendar.google.com/calendar/embed?src=c_classroom12345%40group.calendar.google.com&ctz=America%2FLos_Angeles",
@@ -756,39 +755,43 @@ function People() {
           title="Click/tap to flip"
         >
           <div className="card-3d-inner">
-            {/* FRONT */}
-            <div className="card-face card-front">
-              <div
-                className="aspect-[4/5] w-full bg-cover bg-center relative"
-                style={{
-                  backgroundImage: p.photo ? `url(${p.photo})` : undefined,
-                  background: p.photo
-                    ? undefined
-                    : "linear-gradient(180deg, rgba(215,45,66,.15), rgba(246,73,92,.15))",
-                }}
-              >
-                {/* LinkedIn button (if provided) */}
-                {p.linkedin && (
-                  <a
-                    href={p.linkedin}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="person-ln"
-                    onClick={(e) => e.stopPropagation()}
-                    title="LinkedIn"
-                  >
-                    <Linkedin className="h-5 w-5" />
-                  </a>
-                )}
+{/* FRONT */}
+<div className="card-face card-front">
+  <div className="aspect-[4/5] w-full relative overflow-hidden">
+    {p.photo ? (
+      <img
+        src={p.photo}
+        alt={p.name}
+        className="absolute inset-0 w-full h-full object-cover object-center"
+      />
+    ) : (
+      <div
+        className="absolute inset-0"
+        style={{ background: "linear-gradient(180deg, rgba(215,45,66,.15), rgba(246,73,92,.15))" }}
+      />
+    )}
 
-                {/* name/role overlay */}
-                <div className="person-overlay">
-                  <div className="person-name clamp-1">{p.name}</div>
-                  <div className="person-role clamp-2">{p.role}</div>
-                </div>
-              </div>
-            </div>
+    {/* LinkedIn button (if provided) */}
+    {p.linkedin && (
+      <a
+        href={p.linkedin}
+        target="_blank"
+        rel="noreferrer"
+        className="person-ln"
+        onClick={(e) => e.stopPropagation()}
+        title="LinkedIn"
+      >
+        <Linkedin className="h-5 w-5" />
+      </a>
+    )}
 
+    {/* name/role overlay */}
+    <div className="person-overlay">
+      <div className="person-name clamp-1">{p.name}</div>
+      <div className="person-role clamp-2">{p.role}</div>
+    </div>
+  </div>
+</div>
             {/* BACK */}
             <div className="card-face card-back">
               <div className="bio-back-wrap">
