@@ -36,7 +36,7 @@ function HeadStyle() {
   perspective:1000px;
   position:relative;
   width:100%;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 3 / 4; /* was 4 / 5 */
 }
 .card-3d-inner{
   position:relative;
@@ -56,10 +56,36 @@ function HeadStyle() {
 }
 .card-front{ background:#f8fafc; }
 .card-back{
-  background: linear-gradient(180deg, var(--appho-dark-red), var(--appho-bright-red));
-  color:#fff; transform: rotateY(180deg);
-  display:flex; align-items:center; justify-content:center; padding:16px; text-align:left;
+  background:#fff;               /* white back */
+  color:#111;                    /* dark text */
+  transform: rotateY(180deg);
+  display:flex;                  /* we'll stack body + footer */
+  flex-direction:column;
+  padding:16px;
+  text-align:left;
 }
+/* Back-face footer action (LinkedIn) */
+.card-back-footer{
+  margin-top:auto;               /* push to bottom */
+  display:flex; align-items:center; justify-content:center;
+  padding-top:10px;
+  border-top:1px solid #e5e7eb;
+}
+
+.card-back-ln{
+  display:inline-flex; align-items:center; gap:8px;
+  font-weight:600; font-size:12px;
+  border:1px solid #e5e7eb; border-radius:9999px;
+  padding:8px 12px; background:#fff; color:#0a66c2;  /* LI blue text */
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  text-decoration:none !important;
+}
+.card-back-ln:hover{
+  transform: translateY(-1px);
+  box-shadow:0 8px 24px rgba(0,0,0,.08);
+  border-color:#0a66c2;
+}
+
 
 /* --- FAQ smooth open/close --- */
 details.faq .faq-content{
@@ -101,8 +127,8 @@ details.faq summary{
   background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.55) 85%);
   color:#fff;
 }
-.person-name{ font-weight:700; font-size:14px; }
-.person-role{ font-size:12px; opacity:.95; }
+.person-name{ font-weight:700; font-size:15px; }  /* was 14px */
+.person-role{ font-size:12.5px; opacity:.95; }    /* was 12px */
 
 /* LinkedIn floating button (front) */
 .person-ln{
@@ -432,9 +458,10 @@ function Hero() {
     </section>
   );
 }
+// Card component — bump p-5 → p-6
 function Card({ children, className = "" }) {
   return (
-    <div className={`rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm card-hover-red ${className}`}>
+    <div className={`rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm card-hover-red ${className}`}>
       {children}
     </div>
   );
@@ -751,47 +778,48 @@ function People() {
         <div
           className={`card-3d ${flip ? "forceflip" : ""}`}
           onClick={() => setFlip((v) => !v)}
-          style={{ cursor: "pointer", aspectRatio: "4 / 5" }}
+          style={{ cursor: "pointer", aspectRatio: "3 / 4" }}  // was 4/5
           title="Click/tap to flip"
         >
           <div className="card-3d-inner">
-{/* FRONT */}
-<div className="card-face card-front">
-  <div className="aspect-[4/5] w-full relative overflow-hidden">
-    {p.photo ? (
-      <img
-        src={p.photo}
-        alt={p.name}
-        className="absolute inset-0 w-full h-full object-cover object-center"
-      />
-    ) : (
-      <div
-        className="absolute inset-0"
-        style={{ background: "linear-gradient(180deg, rgba(215,45,66,.15), rgba(246,73,92,.15))" }}
-      />
-    )}
+            {/* FRONT */}
+            <div className="card-face card-front">
+              <div className="aspect-[3/4] w-full relative overflow-hidden">
+                {p.photo ? (
+                  <img
+                    src={p.photo}
+                    alt={p.name}
+                    className="absolute inset-0 w-full h-full object-cover object-center"
+                  />
+                ) : (
+                  <div
+                    className="absolute inset-0"
+                    style={{ background: "linear-gradient(180deg, rgba(215,45,66,.15), rgba(246,73,92,.15))" }}
+                  />
+                )}
 
-    {/* LinkedIn button (if provided) */}
-    {p.linkedin && (
-      <a
-        href={p.linkedin}
-        target="_blank"
-        rel="noreferrer"
-        className="person-ln"
-        onClick={(e) => e.stopPropagation()}
-        title="LinkedIn"
-      >
-        <Linkedin className="h-5 w-5" />
-      </a>
-    )}
+                {/* LinkedIn button (if provided) */}
+                {p.linkedin && (
+                  <a
+                    href={p.linkedin}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="person-ln"
+                    onClick={(e) => e.stopPropagation()}
+                    title="LinkedIn"
+                  >
+                    <Linkedin className="h-5 w-5" />
+                  </a>
+                )}
 
-    {/* name/role overlay */}
-    <div className="person-overlay">
-      <div className="person-name clamp-1">{p.name}</div>
-      <div className="person-role clamp-2">{p.role}</div>
-    </div>
-  </div>
-</div>
+                {/* name/role overlay */}
+                <div className="person-overlay">
+                  <div className="person-name clamp-1">{p.name}</div>
+                  <div className="person-role clamp-2">{p.role}</div>
+                </div>
+              </div>
+            </div>
+
             {/* BACK */}
             <div className="card-face card-back">
               <div className="bio-back-wrap">
@@ -808,12 +836,11 @@ function People() {
                   <div className="bio-val bio-fav clamp-4">{p.favorite || "—"}</div>
                 </div>
 
-                {/* contact row */}
                 <div className="mt-2 flex items-center gap-2">
                   {p.email && (
                     <a
                       href={`mailto:${p.email}`}
-                      className="inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs hover:bg-white/10"
+                      className="inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs hover:bg-zinc-50"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <Mail className="h-3 w-3" /> Email
@@ -824,7 +851,7 @@ function People() {
                       href={p.linkedin}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs hover:bg-white/10"
+                      className="inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs hover:bg-zinc-50"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <Linkedin className="h-3 w-3" /> LinkedIn
@@ -845,7 +872,8 @@ function People() {
         <h2 className="font-display text-3xl section-title">Exec. Board</h2>
         <p className="mt-2 text-zinc-600">{site.people.intro}</p>
 
-        <div className="mt-6 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        {/* grid: 1 col (mobile), 2 cols (sm+), 3 cols (lg+) */}
+        <div className="mt-6 grid gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
           {site.people.officers.map((p, i) => (
             <PersonCard key={p.name + i} p={p} />
           ))}
@@ -854,7 +882,6 @@ function People() {
     </section>
   );
 }
-
 function Events() {
   const [pwd, setPwd] = useState("");
   const [unlocked, setUnlocked] = useState(!site.events.protected);
