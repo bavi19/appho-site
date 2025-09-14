@@ -284,14 +284,22 @@ hero: {
     ],
     dues: { show: true, text: "Annual dues: $30. Scholarships available. Pay on September 17th." },
   },
-  speakers: {
-    intro: "Pre-Health speaker series — physicians, dentists, PAs, pharmacists, PT/OT, optometrists, and more.",
-    upcoming: [],
-    past: [
-      { name: "Alex Rivera, PA-C", role: "Emergency Medicine", topic: "Becoming a Physician Associate", date: "Apr 3, 2025", link: "#" },
-      { name: "Priya Shah, PharmD", role: "Clinical Pharmacist", topic: "Hospital Pharmacy 101", date: "Mar 6, 2025", link: "#" },
-    ],
-  },
+speakers: {
+  intro: "Pre-Health speaker series — physicians, dentists, nurses, PAs, PT/OT, and more.",
+  upcoming: [
+    { name: "Patricia Chu Klap, MD", role: "Emergency Medicine Physician", topic: "Emergency Medicine Insights", date: "Sep 18, 2025" },
+    { name: "Olivia Cvitanic", role: "President, Healing Hearts Across Borders", topic: "Global Health & Service", date: "Sep 25, 2025" },
+    { name: "Luke Joseph", role: "CPR Instructor", topic: "Life-Saving Skills in CPR", date: "Sep 25, 2025" },
+    { name: "Jennifer Montgomery, MD", role: "Family Medicine / Primary Care", topic: "Trauma, Plastic Surgery, ED & UC Experience", date: "Oct 2, 2025" },
+    { name: "Allen Job, DDS, MS, MPH", role: "Pediatric Dentist", topic: "Pediatric Dentistry & Public Health", date: "Oct 16, 2025" },
+    { name: "Macy Basterrechea, DPT", role: "Pelvic Floor Physical Therapist", topic: "Specialized PT: Pelvic Health", date: "Oct 30, 2025" },
+    { name: "Sarah Wood, RN", role: "Critical Care Nurse", topic: "Critical Care Nursing", date: "Nov 6, 2025" },
+  ],
+  past: [
+    // keep prior spring speakers here if you want a historical record
+  ],
+},
+
 people: {
   intro: "Meet the Executive Board",
   officers: [
