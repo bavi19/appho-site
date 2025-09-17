@@ -513,7 +513,7 @@ function HomeAbout() {
 
 function FAQ() {
   const faqs = [
-    { q: "What is APPHO and what does it stand for?", a: "APPHO stands for the Aztec Pre-Health Professional Organization. We are a student-run organization at SDSU dedicated to supporting students pursuing careers in the health professions, including medicine, dentistry, pharmacy, optometry, physician assistant, and more."},
+    { q: "What is APPHO and what does it stand for?", a: "APPHO stands for the Aztec Professional Pre-Health Organization. We are a student-run organization at SDSU dedicated to supporting students pursuing careers in the health professions, including medicine, dentistry, pharmacy, optometry, physician assistant, and more."},
     { q: "Who can join APPHO?", a: "APPHO is open to all SDSU students interested in health-related careers, regardless of major or year."},
     { q: "What makes APPHO different from other pre-health clubs on campus?", a: "Our interdisciplinary focus welcomes students across all health professions. We prioritize community, mentorship, professional development, and networking."},
     { q: "What kind of events does APPHO host?", a: "Guest speaker panels, application workshops, volunteer opportunities, socials, and collaborations with other orgs and departments."},
