@@ -290,7 +290,7 @@ speakers: {
     { name: "Patricia Chu Klap, MD", role: "Emergency Medicine Physician", topic: "Emergency Medicine Insights", date: "Sep 18, 2025" },
     { name: "Olivia Cvitanic", role: "President, Healing Hearts Across Borders", topic: "Global Health & Service", date: "Sep 25, 2025" },
     { name: "Luke Joseph", role: "CPR Instructor", topic: "Life-Saving Skills in CPR", date: "Sep 25, 2025" },
-    { name: "Jennifer Montgomery, MD", role: "Family Medicine / Primary Care", topic: "Trauma, Plastic Surgery, ED & UC Experience", date: "Oct 2, 2025" },
+    { name: "Jennifer Montgomery, PA-C", role: "Family Medicine / Primary Care", topic: "Trauma, Plastic Surgery, ED & UC Experience", date: "Oct 2, 2025" },
     { name: "Allen Job, DDS, MS, MPH", role: "Pediatric Dentist", topic: "Pediatric Dentistry & Public Health", date: "Oct 16, 2025" },
     { name: "Macy Basterrechea, DPT", role: "Pelvic Floor Physical Therapist", topic: "Specialized PT: Pelvic Health", date: "Oct 30, 2025" },
     { name: "Sarah Wood, RN", role: "Critical Care Nurse", topic: "Critical Care Nursing", date: "Nov 6, 2025" },
